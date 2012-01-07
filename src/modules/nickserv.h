@@ -8,7 +8,7 @@ typedef struct _nickgroup nickgroup;
 typedef struct _nickaccount nickaccount;
 
 typedef struct _nicklist {
-    nickaccount *nick;
+    nickaccount *acc;
     struct _nicklist *next;
 } nicklist;
 

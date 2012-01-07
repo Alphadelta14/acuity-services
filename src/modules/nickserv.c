@@ -124,7 +124,7 @@ nickaccount *getNickAccountByNick(char *nick){
     nicklist *nicks;
     nicks = registerednicks;
     while(nicks){
-        if(!strcasecmp(nicks->nick->nick,nick)){/* Worth noting: this is the funniest looking line ever */
+        if(!strcasecmp(nicks->acc->nick,nick)){/* Worth noting: this is the funniest looking line ever */
             return nicks->nick;
         }
         nicks = nicks->next;
@@ -194,32 +194,32 @@ nickaccount *createNickAccount(char *nick){
     nicks = registerednicks;
     if(!nicks){
         safemalloc(registerednicks,nicklist,NULL);
-        registerednicks->nick = acc;
+        registerednicks->acc = acc;
         registerednicks->next = NULL;
     } else {
         while(nicks->next) nicks = nicks->next;
         safemalloc(nicks->next,nicklist,NULL);
-        nicks->next->nick = acc;
+        nicks->next->acc = acc;
         nicks->next->next = NULL;
     }
     return acc;
 }
 
-void addNickToGroup(nickaccount *nick, nickgroup *group){
+void addNickToGroup(nickaccount *acc, nickgroup *group){
     nicklist *members;
-    if((!nick)||(!group))
+    if((!acc)||(!group))
         return;
     /* removeNickFromGroup(nick, nick->group); */
-    nick->group = group;
+    acc->group = group;
     members = group->nicks;
     if(!members){
         safemalloc(group->nicks,nicklist, );
-        group->nicks->nick = nick;
+        group->nicks->acc = acc;
         group->nicks->next = NULL;
     } else {
         while(members->next) members = members->next;
         safemalloc(members->next,nicklist, );
-        members->next->nick = nick;
+        members->next->acc = acc;
         members->next->next = NULL;
     }
 }
