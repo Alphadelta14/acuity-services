@@ -125,7 +125,7 @@ nickaccount *getNickAccountByNick(char *nick){
     nicks = registerednicks;
     while(nicks){
         if(!strcasecmp(nicks->acc->nick,nick)){/* Worth noting: this is the funniest looking line ever */
-            return nicks->nick;
+            return nicks->acc;
         }
         nicks = nicks->next;
     }
@@ -144,7 +144,7 @@ nickgroup *getNickGroupByEmail(char *email){
     return NULL;
 }
 
-nickgroup *createNickGroup(nickaccount *nick, char *pass, char *email){
+nickgroup *createNickGroup(nickaccount *acc, char *pass, char *email){
     nickgrouplist *groups;
     nickgroup *group;
     sha256_context ctx;
@@ -154,10 +154,10 @@ nickgroup *createNickGroup(nickaccount *nick, char *pass, char *email){
     safenmalloc(group->email,char,strlen(email)+1,NULL);
     strcpy(group->email,email);
     safemalloc(group->nicks,nicklist,NULL);
-    group->nicks->nick = nick;
+    group->nicks->acc = acc;
     group->nicks->next = NULL;
     group->metadata = NULL;
-    group->main = nick;
+    group->main = acc;
     rand = fopen("/dev/urandom","r");
     if(rand){
         fread(group->passmethod,1,3,rand);

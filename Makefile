@@ -29,6 +29,8 @@ $(CC) -g -Wall -shared -rdynamic -export-dynamic -o $(patsubst src/modules/%.c, 
 echo "Built module: $(patsubst src/modules/%.c, %, $(var))";
 
 mod:
+	mkdir -p build/modules
+	mkdir -p modules
 	@$(foreach var, $(wildcard src/modules/*.c), $(cmd))
 
 # vim: set shiftwidth=4 softtabstop=4:
