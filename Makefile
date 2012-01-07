@@ -4,6 +4,7 @@ MODFLAGS = -fpic -rdynamic -DMODULE -export-dynamic
 LIBS = -ldl
 
 @all:
+	mkdir -p build
 	$(CC) $(CFLAGS) -c -Iincludes -o build/acuity.o src/acuity.c
 	$(CC) $(CFLAGS) -c -Iincludes -o build/config.o src/config.c
 	$(CC) $(CFLAGS) -c -Iincludes -o build/module.o src/module.c
