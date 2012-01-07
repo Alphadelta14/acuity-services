@@ -1,0 +1,61 @@
+As we all know, open source projects are usually written by more than
+one developer at a time, and therefore it's required to agree on a
+common style what code is supposed to look like.
+
+I shall use an example of code here to get the point across, not
+necessarily complete or correct the way it is:
+line parseLineInsp(char *data){
+    line L;
+    char *dataptr;
+
+    L.id = NULL;
+    L.command = NULL;
+    L.params = NULL;
+    L.paramCount = 0;
+    L.text = NULL;
+
+    if(!data||!data[0]){
+        return L;
+    }
+    if(data[0] == ':'){
+        L.id = data+1;
+        while(data[0]!=' ') data++;
+        data[0] = '\0';
+        data++;
+    }
+    L.command = data;
+    while(data[0]!=' '){
+        if(data[0]=='\0')
+            return L;
+        data++;
+    }
+    /* Terminate string properly */
+    data[0] = '\0';
+
+    /* Shouldn't happen... */
+    if(!L)
+        aclog(LOG_ERROR, "parseLineInsp: L is broken!\n");
+    
+    return L;
+}
+
+Things to note:
+- Spaces are the spawn of Satan:
+  - No spaces after anything that is followed by a parenthesis: if,
+    while, function calls, etc
+  - No spaces in front of opening braces
+  - No spaces in front of or after any comparison operator
+  - No spaces in front of or after simple || and && conditions (such as
+    those that don't require parentheses to be readable)
+- /* This is the only sane way to comment. No //. */
+- It's okay to leave out a newline for trivial statements for a one-line
+  if followup statement (if(moo) return L;).
+- Assignments *do* take spaces.
+- All braces go to the same line as the statement that requires them
+- Always declare the variables you use in the code at the beginning of
+  the function, indenting them as if they were normal code.
+- One-character variables (L, U, etc.) are required to be uppercase.
+- Functions take a space after the comma, in all cases.
+Indentation:
+- Four spaces per level of indent, this includes one-line if follow-up
+  statements, too.
