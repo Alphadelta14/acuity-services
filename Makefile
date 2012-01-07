@@ -1,6 +1,8 @@
 CC = gcc
 CFLAGS = -g -Wall -Iincludes
 MODFLAGS = -fpic -rdynamic -DMODULE -export-dynamic
+# BSD users:
+# LIBS = 
 LIBS = -ldl
 
 @all:
