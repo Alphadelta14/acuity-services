@@ -17,11 +17,12 @@ C compiler available.
 
 Installation
 ------------
-NOTE: BSD users have to edit the Makefile due to portability issues.
 $ make
 $ make mod
 $ cp acuity.conf.example acuity.conf
 $ $EDITOR acuity.conf
+
+NOTE: BSD users have to edit the Makefile due to portability issues.
 
 The configuration contains explanatory comments, so it should be
 possible to get things done easily enough.
