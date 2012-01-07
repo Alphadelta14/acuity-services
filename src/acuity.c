@@ -8,7 +8,6 @@
 
 #include <acuity.h>
 #include <events.h>
-#include <defaults.h>
 #include <config.h>
 #include <ircd.h>
 #include <network.h>
