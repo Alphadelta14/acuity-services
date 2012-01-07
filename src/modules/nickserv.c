@@ -1,0 +1,285 @@
+/* * * *
+NickServ: Nick Auth Module
+Potential Configuration Values:
+@ NickServNick = Nick for Nick Auth Services to use
+@ NickServHost = Host for Nick Auth Services to use
+@ NickServIdent = Ident for Nick Auth Services to use
+@ NickServGECOS = GECOS (Real Name) for Nick Auth Services to use
+*/
+
+#include <services.h>
+#include <encrypt.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "nickserv.h"
+
+user *nickserv = NULL;
+commandnode *nickservcmds = NULL;
+unsigned int cNickGroupID = 1;/* current group id */
+nicklist *registerednicks = NULL;
+nickgrouplist *registerednickgroups = NULL;
+
+void createNickServ(line *L){
+    char defaultnick[] = "NickServ",
+         defaulthost[] = "nick.auth.services",
+        defaultident[] = "NickServ",
+        defaultgecos[] = "Nick Authentication Services";
+    char *tmp, *nick, *host, *ident, *gecos;
+
+    if((tmp = getConfigValue("NickServNick"))) nick = tmp;
+    else nick = defaultnick;
+    if((tmp = getConfigValue("NickServHost"))) host = tmp;
+    else host = defaulthost;
+    if((tmp = getConfigValue("NickServIdent"))) ident = tmp;
+    else ident = defaultident;
+    if((tmp = getConfigValue("NickServGECOS"))) gecos = tmp;
+    else gecos = defaultgecos;
+
+
+    nickserv = createService(nick, host, ident, gecos);
+}
+
+void registerNickServCommand(char *cmd, void (*callback)(char *uid, char *msg)){
+    commandnode *node, *prev;
+    node = (commandnode*)malloc(sizeof(commandnode));
+    if(!node){
+        aclog(LOG_ERROR, "Failed to register %s as a NickServ command. Failed to allocate memory.\n",cmd);
+        return;
+    }
+    node->cmd = (char*)malloc(sizeof(char)*(strlen(cmd)+1));
+    if(!node->cmd){
+        aclog(LOG_ERROR, "Failed to register %s as a NickServ command. Failed to allocate memory for command name.\n",cmd);
+        return;
+    }
+    strcpy(node->cmd,cmd);
+    node->callback = callback;
+    node->next = NULL;
+    prev = nickservcmds;
+    if(!nickservcmds){
+        nickservcmds = node;
+    } else {
+        while(prev->next) prev = prev->next;
+        prev->next = node;
+    }
+}
+
+void fireNickServCommand(line *l){
+    int cmdlen;
+    char *index;
+    commandnode *node;
+    if(strcmp(l->params[0],nickserv->uid))
+        return;/* not us */
+    index = strstr(l->text," ");
+    if(index){
+        cmdlen = (int)(index - l->text);
+    } else {
+        cmdlen = strlen(l->text);
+    }
+    node = nickservcmds;
+    while(node){
+        if(!strncasecmp(node->cmd,l->text,cmdlen)){
+            node->callback(l->id,l->text);
+            return;
+        }
+        node = node->next;
+    }
+}
+
+void ns_message(char *uid, char *str, ...){
+    char obuff[512], buff[512];
+    va_list args;
+    va_start(args,str);
+    /* TODO: optionally PRIVMSG */
+    sprintf(obuff,":%s NOTICE %s :%s\r\n",nickserv->uid,uid,str);
+    vsprintf(buff,obuff,args);
+    va_end(args);
+    send_raw_line(buff);
+}
+
+char valid_email(char *email){
+    /* very basic function */
+    if(!strstr(email,"@"))
+        return 0;
+    if(!strstr(email,"."))
+        return 0;
+    if(strstr(email,"\""))
+        return 0;
+    if(strstr(email,"'"))
+        return 0;
+    if(strstr(email,"!"))
+        return 0;
+    if(strstr(email,","))
+        return 0;
+    if(strlen(email)<6)
+        return 0;
+    return 1;
+}
+
+unsigned int generateNickGroupID(void){
+    return cNickGroupID++;
+}
+
+nickaccount *getNickAccountByNick(char *nick){
+    nicklist *nicks;
+    nicks = registerednicks;
+    while(nicks){
+        if(!strcasecmp(nicks->nick->nick,nick)){/* Worth noting: this is the funniest looking line ever */
+            return nicks->nick;
+        }
+        nicks = nicks->next;
+    }
+    return NULL;
+}
+
+nickgroup *getNickGroupByEmail(char *email){
+    nickgrouplist *groups;
+    groups = registerednickgroups;
+    while(groups){
+        if(!strcasecmp(groups->group->email,email)){
+            return groups->group;
+        }
+        groups = groups->next;
+    }
+    return NULL;
+}
+
+nickgroup *createNickGroup(nickaccount *nick, char *pass, char *email){
+    nickgrouplist *groups;
+    nickgroup *group;
+    sha256_context ctx;
+    FILE *rand;
+    safemalloc(group,nickgroup,NULL);
+    group->groupid = generateNickGroupID();
+    safenmalloc(group->email,char,strlen(email)+1,NULL);
+    strcpy(group->email,email);
+    safemalloc(group->nicks,nicklist,NULL);
+    group->nicks->nick = nick;
+    group->nicks->next = NULL;
+    group->metadata = NULL;
+    group->main = nick;
+    rand = fopen("/dev/urandom","r");
+    if(rand){
+        fread(group->passmethod,1,3,rand);
+    }
+    group->passmethod[3] = ENC_SHA256;
+    fclose(rand);
+    sha256_starts(&ctx);
+    sha256_update(&ctx,(unsigned char*)pass,strlen(pass));
+    sha256_update(&ctx,group->passmethod,3);
+    sha256_finish(&ctx,group->passwd);
+    groups = registerednickgroups;
+    if(!groups){
+        safemalloc(registerednickgroups,nickgrouplist,NULL);
+        registerednickgroups->group = group;
+        registerednickgroups->next = NULL;
+    } else {
+        while(groups->next) groups = groups->next;
+        safemalloc(groups->next,nickgrouplist,NULL);
+        groups->next->group = group;
+        groups->next->next = NULL;
+    }
+    return group;
+}
+
+nickaccount *createNickAccount(char *nick){
+    nickaccount *acc;
+    nicklist *nicks;
+    safemalloc(acc,nickaccount,NULL);
+    safenmalloc(acc->nick,char,sizeof(nick)+1,NULL);
+    strcpy(acc->nick,nick);
+    acc->regtime = time(NULL);
+    acc->metadata = NULL;
+    acc->group = NULL;
+    nicks = registerednicks;
+    if(!nicks){
+        safemalloc(registerednicks,nicklist,NULL);
+        registerednicks->nick = acc;
+        registerednicks->next = NULL;
+    } else {
+        while(nicks->next) nicks = nicks->next;
+        safemalloc(nicks->next,nicklist,NULL);
+        nicks->next->nick = acc;
+        nicks->next->next = NULL;
+    }
+    return acc;
+}
+
+void addNickToGroup(nickaccount *nick, nickgroup *group){
+    nicklist *members;
+    if((!nick)||(!group))
+        return;
+    /* removeNickFromGroup(nick, nick->group); */
+    nick->group = group;
+    members = group->nicks;
+    if(!members){
+        safemalloc(group->nicks,nicklist, );
+        group->nicks->nick = nick;
+        group->nicks->next = NULL;
+    } else {
+        while(members->next) members = members->next;
+        safemalloc(members->next,nicklist, );
+        members->next->nick = nick;
+        members->next->next = NULL;
+    }
+}
+
+void ns_register(char *uid, char *msg){
+    user *U;
+    char *pass, *email, *spaces, *tmpconf;
+    nickaccount *acc;
+    U = getUser(uid);
+    if(!U)
+        return;
+    strtok_r(msg," ",&spaces);/* register */
+    pass = strtok_r(NULL," ",&spaces);
+    email = strtok_r(NULL," ",&spaces);
+    if((!pass)||(!email)){
+        ns_message(uid,"Syntax: REGISTER password email");
+        return;
+    }
+    if(getNickAccountByNick(U->nick)){
+        ns_message(uid,"You have already registered your nick.");
+        return;
+    }
+    if(getNickGroupByEmail(email)){
+        ns_message(uid,"This email already belongs to a nick group. For help on grouping a nick, use HELP group.");
+        return;
+    }
+    if(!valid_email(email)){
+        ns_message(uid,"%s is not a valid email address.",email);
+        return;
+    }
+    tmpconf = getConfigValue("NickServMinPasslen");
+    if(tmpconf){
+        if(strlen(pass)<atoi(tmpconf)){
+            ns_message(uid,"Password must be at least %s characters long.",tmpconf);
+            return;
+        }
+    }
+    /* TODO: check if U->nick is registerable (mod hooks for Guest nicks, reserved nicks, etc) */
+    acc = createNickAccount(U->nick);
+    if(!acc){
+        aclog(LOG_ERROR,"Failed to create account for %s (%s).\n", U->nick, uid);
+        return;
+    }
+    createNickGroup(acc, pass, email);
+    ns_message(uid,"Your account has been registered with the password %s. Please remember this for when you identify to your new nick.",pass);
+    aclog(LOG_SERVICE,"New Nick: %s!%s@%s has registered their nick with the email %s.\n", U->nick, U->ident, U->host, email);
+    /*setModes(nickserv->uid, uid, 1, 'r');*/
+}
+
+void testCmd(char *uid, char *msg){
+    char buff[128];
+    sprintf(buff,":%s NOTICE %s :Test succeeded.\r\n",nickserv->uid,uid);
+    send_raw_line(buff);
+    aclog(LOG_DEBUG,"Test message sent: %s\n",msg);
+}
+
+void INIT_MOD(){
+    hook_event(EVENT_LINK, createNickServ);
+    hook_event(EVENT_MESSAGE, fireNickServCommand);
+    registerNickServCommand("test",testCmd);
+    registerNickServCommand("register",ns_register);
+    loadModule("ns_test");
+}
