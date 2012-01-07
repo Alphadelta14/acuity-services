@@ -1,3 +1,4 @@
+# Edit here as necessary:
 CC = gcc
 CFLAGS = -g -Wall -Iincludes
 MODFLAGS = -fpic -rdynamic -DMODULE -export-dynamic
@@ -5,6 +6,7 @@ MODFLAGS = -fpic -rdynamic -DMODULE -export-dynamic
 # LIBS = 
 LIBS = -ldl
 
+# Don't edit here:
 @all:
 	mkdir -p build
 	$(CC) $(CFLAGS) -c -Iincludes -o build/acuity.o src/acuity.c
