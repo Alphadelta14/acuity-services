@@ -124,7 +124,7 @@ nickaccount *getNickAccountByNick(char *nick){
     nicklist *nicks;
     nicks = registerednicks;
     while(nicks){
-        if(!strcasecmp(nicks->acc->nick,nick)){/* Worth noting: this is the funniest looking line ever */
+        if(!strcasecmp(nicks->acc->nick,nick)){
             return nicks->acc;
         }
         nicks = nicks->next;
