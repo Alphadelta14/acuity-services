@@ -75,6 +75,28 @@ user *_addUser(char *uid, char *nick, char *ident, char *host, char *ip, char *v
     return U;
 }
 
+void changeMode(int *modeMinor, int *modeMajor, char *modes){
+    char isAdding = 1;
+    while(modes[0]){
+        if(modes[0] == '+'){
+            isAdding = 1;
+        }else if(modes[0] == '-'){
+            isAdding = 0;
+        }else if(modes[0]&0x20){
+            if(isAdding)
+                *modeMinor |= char2mode(modes[0]);
+            else
+                *modeMinor &= ~char2mode(modes[0]);
+        }else{
+            if(isAdding)
+                *modeMajor |= char2mode(modes[0]);
+            else
+                *modeMajor &= ~char2mode(modes[0]);
+        }
+        modes++;
+    }
+}
+
 user *_getUser(char *uid){
     user *U;
     usernode *node;

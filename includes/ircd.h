@@ -14,6 +14,8 @@ int (*eventloopIRC)(void);
 user *(*createUser)(char *uid, char *nick, char *ident, char *host, char *ip, char *vhost, char *gecos, char *modes);
 char *(*generateUID)(void);
 char (*isValidNick)(char *nick);
+extern char isUser(char *target);
+extern void setMode(char *senderid, char *target, char *modes);
 
 int irc_socket;
 metanode *remoteconf;

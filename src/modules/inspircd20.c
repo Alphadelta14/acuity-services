@@ -193,6 +193,11 @@ void printLine(line *L){
         printf("\ttext: %s\n",L->text);
 }
 
+char isUser(char *target){
+    /* is first character a number? if so, then it's a user and not a channel */
+    return ((target[0]<='9')&&(target[0]>='0'));
+}
+
 void updateRemoteConf(char *info){
     metanode *node, *next;
     char *key, *value;
@@ -408,6 +413,7 @@ void handleLineInsp(line *l){
     /* let's give everyone some nice variables to work with */
     char *a;
     char s[512], t[64];
+    user *U;
 
     if(!strcmp(l->command,"PING")){
         sprintf(s,":%s PONG %s %s\r\n",getConfigValue("ServerId"),l->params[1],l->params[0]);
@@ -531,12 +537,25 @@ UID (644) +9:
 	param[3]: by
 	param[4]: FEAR*/
     } else if(!strcmp(l->command,"MODE")){
+        if(!isUser(l->params[0]))
+            U = (user*)getChannel(l->params[0]);
+        else
+            U = getUser(l->params[0]);
+        if(l->paramCount == 2){
+            changeMode(&U->modeMinor, &U->modeMajor, l->params[2]);
+        } /* TODO: the last parameter */
 /*MODE (644) +3:
 	param[0]: 644AAAAAA
 	param[1]: +s
 	param[2]: +aAcCdDfFgGjJkKlLnNoOqQtTvVxX*/
     } else if(!strcmp(l->command,"FMODE")){
-        printLine(l);
+        if(!isUser(l->params[0]))
+            U = (user*)getChannel(l->params[0]);
+        else
+            U = getUser(l->params[0]);
+        if(l->paramCount == 3){
+            changeMode(&U->modeMinor, &U->modeMajor, l->params[2]);
+        } /* TODO: the last parameter */
 /*FMODE (644AAAAAA) +4:
 	param[0]: #lobby
 	param[1]: 1325526922
@@ -627,6 +646,21 @@ char isValidNickInsp(char *nick){
         return 0;
     }
     return 1;
+}
+
+void setMode(char *senderid, char *target, char *modes){
+    char buff[512];
+    user *U;
+    if(!senderid||!target||!modes)
+        return;
+    sprintf(buff,":%s MODE %s %s\r\n",senderid, target, modes);
+    send_raw_line(buff);
+    if(!isUser(target))
+        U = (user*)getChannel(target);
+    else
+        U = getUser(target);
+    changeMode(&U->modeMinor, &U->modeMajor, modes);
+    aclog(LOG_DEBUG,"%s set modes %s on %s.\n", senderid, modes, target);
 }
 
 void lolping(int argc, char **argv){

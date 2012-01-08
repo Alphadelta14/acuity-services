@@ -266,7 +266,7 @@ void ns_register(char *uid, char *msg){
     createNickGroup(acc, pass, email);
     ns_message(uid,"Your account has been registered with the password %s. Please remember this for when you identify to your new nick.",pass);
     aclog(LOG_SERVICE,"New Nick: %s!%s@%s has registered their nick with the email %s.\n", U->nick, U->ident, U->host, email);
-    /*setModes(nickserv->uid, uid, 1, 'r');*/
+    setMode(nickserv->uid, uid, "+r");
 }
 
 void testCmd(char *uid, char *msg){

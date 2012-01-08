@@ -15,5 +15,6 @@ chan *(*getChannel)(char *name);
 statusnode *(*addChannelUser)(chan *C, user *U);
 void (*delChannelUser)(chan *C, user *U);
 int (*chanStatusAppend)(char *channame, char *status);
+void changeMode(int *modeMinor, int *modeMajor, char *modes);
 
 #endif /* NETWORK_H */

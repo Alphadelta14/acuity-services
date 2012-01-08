@@ -16,14 +16,16 @@ typedef struct _channode {
     struct _channode *next;
 } channode;
 typedef struct _statusnode {
+    int modeMinor;
+    int modeMajor;
     user *U;
-    /* same space as char modes[8], but this is so much more logical and consistent */
-    unsigned int modeMinor;
-    unsigned int modeMajor;
     struct _statusnode *next;
 } statusnode;
 
 struct _user {
+    /* see note below (chan) on modes */
+    int modeMinor;
+    int modeMajor;
     char *uid;
     char *nick;
     char *ident;/* I fail to see a use for a vident field */
@@ -32,19 +34,19 @@ struct _user {
     char *ip;
     char *gecos;
     //account *acc;
-    unsigned int modeMinor;
-    unsigned int modeMajor;
     channode *chans;
     metanode *metadata;
 };
 
 struct _chan {
+    /* modeMinor and modeMajor go first in the node so that a channel can be cast to a user when setting modes.
+        U = (user*)somechan; U->modeMinor will exist for both */
+    int modeMinor;
+    int modeMajor;
     char *name;
     char *topic;
     //chanaccount *acc;
     /* banlist? */
-    unsigned int modeMinor;
-    unsigned int modeMajor;
     statusnode *users;
     metanode *metadata;
 };
