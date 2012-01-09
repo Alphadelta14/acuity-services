@@ -23,6 +23,28 @@
 #include <encrypt.h>
 
 
+char matchPassword(char *pass, unsigned char passwd[], unsigned char passmethod[]){
+    /* passwd[32], passmethod[4]*/
+    sha256_context ctx;
+    unsigned char newpasswd[32];
+    int i;
+    if(!pass||!passwd||!passmethod)
+        return 0;
+    if(passmethod[3] == ENC_SHA256){
+        sha256_starts(&ctx);
+        sha256_update(&ctx,(unsigned char*)pass,strlen(pass));
+        sha256_update(&ctx,passmethod,3);
+        sha256_finish(&ctx,newpasswd);
+    } else {
+        return 0;
+    }
+    for(i=0; i<32; i++){
+        if(passwd[i] != newpasswd[i])
+            return 0;
+    }
+    return 1;
+}
+
 
 #define GET_UINT32(n,b,i)                       \
 {                                               \

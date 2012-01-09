@@ -536,6 +536,13 @@ UID (644) +9:
 	param[2]: reset
 	param[3]: by
 	param[4]: FEAR*/
+    } else if(!strcmp(l->command,"NICK")){
+        U = getUser(l->id);
+        changeNick(U, l->params[0]);
+        fire_event(EVENT_NICK,l);
+/*NICK (644AAAAAA) +2:
+	param[0]: Yellow
+	param[1]: 1326066127 */
     } else if(!strcmp(l->command,"MODE")){
         if(!isUser(l->params[0]))
             U = (user*)getChannel(l->params[0]);

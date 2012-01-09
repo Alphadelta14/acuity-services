@@ -96,6 +96,13 @@ void changeMode(int *modeMinor, int *modeMajor, char *modes){
         modes++;
     }
 }
+void changeNick(user *U, char *nick){
+    if(!U||!nick)
+        return;
+    free(U->nick);
+    safenmalloc(U->nick, char, strlen(nick)+1, );
+    strcpy(U->nick, nick);
+}
 
 user *_getUser(char *uid){
     user *U;

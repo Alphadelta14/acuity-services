@@ -86,6 +86,7 @@ void fireNickServCommand(line *l){
     }
 }
 
+
 void ns_message(char *uid, char *str, ...){
     char obuff[512], buff[512];
     va_list args;
@@ -158,6 +159,8 @@ nickgroup *createNickGroup(nickaccount *acc, char *pass, char *email){
     group->nicks->next = NULL;
     group->metadata = NULL;
     group->main = acc;
+    acc->group = group;
+    /* removeNickFromGroup(acc, acc->group); */
     rand = fopen("/dev/urandom","r");
     if(rand){
         fread(group->passmethod,1,3,rand);
@@ -269,6 +272,69 @@ void ns_register(char *uid, char *msg){
     setMode(nickserv->uid, uid, "+r");
 }
 
+void ns_group(char *uid, char *msg){
+    user *U;
+    char *target, *pass, *spaces, *tmpconf;
+    nickaccount *acc, *T;
+    nickgroup *newgroup;
+    nicklist *nicks;
+    int membercount = 0;
+    U = getUser(uid);
+    if(!U)
+        return;
+    strtok_r(msg," ",&spaces);/* group */
+    target = strtok_r(NULL," ",&spaces);
+    pass = strtok_r(NULL," ",&spaces);
+    if((!pass)||(!target)){
+        ns_message(uid,"Syntax: GROUP target password");
+        return;
+    }
+    T = getNickAccountByNick(target);
+    if(!T){
+        ns_message(uid, "%s is not a registered user.",target);
+        return;
+    }
+    newgroup = T->group;
+    if(!newgroup){
+        aclog(LOG_DEBUG, "%s does not have a group associated with their nick.",target);
+        return;
+    }
+    if(!matchPassword(pass, newgroup->passwd, newgroup->passmethod)){
+        /* TODO: password fail counter implementation */
+        aclog(LOG_DEBUG | LOG_SERVICE, "%s failed to group to %s's group. Password did not match.",U->nick, target);
+        ns_message(uid, "Access denied. Password does not match.");
+        return;
+    }
+    nicks = newgroup->nicks;
+    while(nicks){
+        membercount++;
+        nicks = nicks->next;
+    }
+    tmpconf = getConfigValue("NickServMaxGroupedNicks");
+    if(tmpconf){
+        if(membercount >= atoi(tmpconf)){
+            aclog(LOG_DEBUG | LOG_SERVICE, "%s failed to group to %s's group. Max members has already been reached.",U->nick, target);
+            ns_message(uid, "This group already has %d members in it. No more can be added.", membercount);
+            return;
+        }
+    }
+    acc = getNickAccountByNick(U->nick);
+    if(!acc){
+        acc = createNickAccount(U->nick);
+        aclog(LOG_SERVICE,"New Nick: %s!%s@%s has grouped their new nick to %s.\n", U->nick, U->ident, U->host, target);
+        setMode(nickserv->uid, uid, "+r");
+        addNickToGroup(acc, newgroup);
+    } else {
+        if(acc->group == newgroup){
+            ns_message(uid, "You already belong to that group.");
+            return;
+        }
+        addNickToGroup(acc, newgroup);
+        aclog(LOG_SERVICE,"Group: %s!%s@%s has grouped their nick to %s.\n", U->nick, U->ident, U->host, target);
+    }
+    ns_message(uid, "You have joined %s's group.", target);
+}
+
 void testCmd(char *uid, char *msg){
     char buff[128];
     sprintf(buff,":%s NOTICE %s :Test succeeded.\r\n",nickserv->uid,uid);
@@ -281,5 +347,6 @@ void INIT_MOD(){
     hook_event(EVENT_MESSAGE, fireNickServCommand);
     registerNickServCommand("test",testCmd);
     registerNickServCommand("register",ns_register);
+    registerNickServCommand("group",ns_group);
     loadModule("ns_test");
 }

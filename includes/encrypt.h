@@ -11,6 +11,8 @@ typedef struct {
     unsigned char buffer[64];
 } sha256_context;
 
+char matchPassword(char *pass, unsigned char passwd[], unsigned char passmethod[]);
+
 void sha256_starts( sha256_context *ctx );
 void sha256_update( sha256_context *ctx, unsigned char *input, unsigned long int length );
 void sha256_finish( sha256_context *ctx, unsigned char digest[32] );
