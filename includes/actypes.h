@@ -44,6 +44,10 @@ return failreturn ;\
 #define MODE_X 0x00800000
 #define MODE_Y 0x01000000
 #define MODE_Z 0x02000000
+#define MODE_CHAR   0x03FFFFFF
+/* skip 0x0400000 */
+#define MODE_MAJOR  0x08000000
+#define MODE_REMOVE 0x10000000
 
 typedef struct _line {
     char *id;

@@ -7,6 +7,7 @@ usernode *userlist;
 channode *chanlist;
 
 int (*char2mode)(char modechar);
+char *buildModes(int count, ...);
 
 user *(*addUser)(char *uid, char *nick, char *ident, char *host, char *ip, char *vhost, char *gecos, char *modes);
 user *(*getUser)(char *uid);

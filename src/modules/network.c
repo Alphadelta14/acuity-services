@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include <acuity.h>
 #include <network.h>
@@ -9,6 +10,43 @@
 int _char2mode(char modechar){
     /* converts 'A' (or 'a') to MODE_A */
     return 1<<((modechar&0x5F)-0x41);
+}
+
+char *buildModes(int count, ...){
+    char *modes, modechar;
+    va_list args;
+    int addPos = 1, remPos, i, j, arg, mode;
+    remPos = count+1;
+    /* +ABC-DEF; addPos = A (1), remPos = F (7) */
+    va_start(args,count);
+    safenmalloc(modes, char, count+2, NULL);
+    for(i = 0; i < count; i++){
+        arg = va_arg(args, int);
+        mode = (arg&MODE_CHAR);
+        j = 0;
+        while(1<<j != mode) j++;
+        modechar = j+0x41;
+        if(!(arg&MODE_MAJOR))
+            modechar |= 0x20;
+        if(arg&MODE_REMOVE){
+            modes[remPos--] = modechar;
+        } else {
+            modes[addPos++] = modechar;
+        }
+    }
+    if(remPos == count+1)
+        modes[remPos] = '\0';/* stop at - sign */
+    else
+        modes[remPos] = '-';
+    if(addPos == 1){
+        for(i=0; i < count+2; i++){
+            modes[i] = modes[i+1];
+        }/* shift entire thing down */
+    }else{
+        modes[0] = '+';
+    }
+    va_end(args);
+    return modes;
 }
 
 user *_addUser(char *uid, char *nick, char *ident, char *host, char *ip, char *vhost, char *gecos, char *modes){
