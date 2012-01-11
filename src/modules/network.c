@@ -49,6 +49,36 @@ char *buildModes(int count, ...){
     return modes;
 }
 
+char checkModes(int *modeM, int count, ...){
+    /* modeM should be &U->modeMinor */
+    va_list args;
+    int i, mode, arg;
+    if(!modeM)
+        return 0;
+    for(i = 0; i < count; i++){
+        arg = va_arg(args, int);
+        mode = (arg&MODE_CHAR);
+        if(arg&MODE_REMOVE){
+            if((arg&MODE_MAJOR)&&(modeM[1]&mode)){
+                return 0;
+            } else if(!(arg&MODE_MAJOR)&&(modeM[0]&mode)){
+                return 0;
+            } else {
+                continue;
+            }
+        }else{
+            if((arg&MODE_MAJOR)&&(modeM[1]&mode)){
+                continue;
+            } else if(!(arg&MODE_MAJOR)&&(modeM[0]&mode)){
+                continue;
+            } else {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
 user *_addUser(char *uid, char *nick, char *ident, char *host, char *ip, char *vhost, char *gecos, char *modes){
     /* all data is copied so that anything can be erased without this structure being disturbed. It will clean up after itself later */
     user *U;
