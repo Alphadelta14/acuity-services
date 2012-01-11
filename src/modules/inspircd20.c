@@ -549,7 +549,7 @@ UID (644) +9:
         else
             U = getUser(l->params[0]);
         if(l->paramCount == 2){
-            changeMode(&U->modeMinor, &U->modeMajor, l->params[2]);
+            changeMode(&U->modeMinor, l->params[2]);
         } /* TODO: the last parameter */
 /*MODE (644) +3:
 	param[0]: 644AAAAAA
@@ -561,7 +561,7 @@ UID (644) +9:
         else
             U = getUser(l->params[0]);
         if(l->paramCount == 3){
-            changeMode(&U->modeMinor, &U->modeMajor, l->params[2]);
+            changeMode(&U->modeMinor, l->params[2]);
         } /* TODO: the last parameter */
 /*FMODE (644AAAAAA) +4:
 	param[0]: #lobby
@@ -666,7 +666,7 @@ void setMode(char *senderid, char *target, char *modes){
         U = (user*)getChannel(target);
     else
         U = getUser(target);
-    changeMode(&U->modeMinor, &U->modeMajor, modes);
+    changeMode(&U->modeMinor, modes);
     aclog(LOG_DEBUG,"%s set modes %s on %s.\n", senderid, modes, target);
 }
 

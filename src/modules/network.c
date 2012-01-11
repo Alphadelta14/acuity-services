@@ -143,7 +143,7 @@ user *_addUser(char *uid, char *nick, char *ident, char *host, char *ip, char *v
     return U;
 }
 
-void changeMode(int *modeMinor, int *modeMajor, char *modes){
+void changeMode(int *modeM, char *modes){
     char isAdding = 1;
     while(modes[0]){
         if(modes[0] == '+'){
@@ -152,14 +152,14 @@ void changeMode(int *modeMinor, int *modeMajor, char *modes){
             isAdding = 0;
         }else if(modes[0]&0x20){
             if(isAdding)
-                *modeMinor |= char2mode(modes[0]);
+                modeM[0] |= char2mode(modes[0]);
             else
-                *modeMinor &= ~char2mode(modes[0]);
+                modeM[0] &= ~char2mode(modes[0]);
         }else{
             if(isAdding)
-                *modeMajor |= char2mode(modes[0]);
+                modeM[1] |= char2mode(modes[0]);
             else
-                *modeMajor &= ~char2mode(modes[0]);
+                modeM[1] &= ~char2mode(modes[0]);
         }
         modes++;
     }
