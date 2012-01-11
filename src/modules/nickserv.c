@@ -19,6 +19,7 @@ commandnode *nickservcmds = NULL;
 unsigned int cNickGroupID = 1;/* current group id */
 nicklist *registerednicks = NULL;
 nickgrouplist *registerednickgroups = NULL;
+int MODE_NSREGISTER = MODE_R;
 
 void createNickServ(line *L){
     char defaultnick[] = "NickServ",
@@ -229,7 +230,7 @@ void addNickToGroup(nickaccount *acc, nickgroup *group){
 
 void ns_register(char *uid, char *msg){
     user *U;
-    char *pass, *email, *spaces, *tmpconf;
+    char *pass, *email, *spaces, *tmpconf, *modes;
     nickaccount *acc;
     U = getUser(uid);
     if(!U)
@@ -269,12 +270,14 @@ void ns_register(char *uid, char *msg){
     createNickGroup(acc, pass, email);
     ns_message(uid,"Your account has been registered with the password %s. Please remember this for when you identify to your new nick.",pass);
     aclog(LOG_SERVICE,"New Nick: %s!%s@%s has registered their nick with the email %s.\n", U->nick, U->ident, U->host, email);
-    setMode(nickserv->uid, uid, "+r");
+    modes = buildModes(1, MODE_NSREGISTER);
+    setMode(nickserv->uid, uid, modes);
+    free(modes);
 }
 
 void ns_group(char *uid, char *msg){
     user *U;
-    char *target, *pass, *spaces, *tmpconf;
+    char *target, *pass, *spaces, *tmpconf, *modes;
     nickaccount *acc, *T;
     nickgroup *newgroup;
     nicklist *nicks;
@@ -322,7 +325,9 @@ void ns_group(char *uid, char *msg){
     if(!acc){
         acc = createNickAccount(U->nick);
         aclog(LOG_SERVICE,"New Nick: %s!%s@%s has grouped their new nick to %s.\n", U->nick, U->ident, U->host, target);
-        setMode(nickserv->uid, uid, "+r");
+        modes = buildModes(1, MODE_NSREGISTER);
+        setMode(nickserv->uid, uid, modes);
+        free(modes);
         addNickToGroup(acc, newgroup);
     } else {
         if(acc->group == newgroup){
