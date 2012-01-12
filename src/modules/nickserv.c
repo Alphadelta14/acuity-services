@@ -5,6 +5,8 @@ Potential Configuration Values:
 @ NickServHost = Host for Nick Auth Services to use
 @ NickServIdent = Ident for Nick Auth Services to use
 @ NickServGECOS = GECOS (Real Name) for Nick Auth Services to use
+@ NickServMinPasslen = Minimum password length
+@ NickServMaxGroupedNicks = Maximum nicks per group
 */
 
 #include <services.h>
