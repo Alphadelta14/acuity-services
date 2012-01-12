@@ -2,3 +2,4 @@ acuity
 build/*
 modules/*
 acuity.conf
+acuity.pid
