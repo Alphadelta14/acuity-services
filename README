@@ -18,7 +18,6 @@ C compiler available.
 Installation
 ------------
 $ make
-$ make mod
 $ cp acuity.conf.example acuity.conf
 $ $EDITOR acuity.conf
 
