@@ -1,0 +1,8 @@
+This folder contains only technical/coding documentation. All docs that
+are relevant for end-users should go to the main directory instead, but
+should consist of INSTALL/README only anyway.
+
+Alphabetical index:
+CODING_STYLE       -- Code style and naming conventions
+README             -- This document
+
