@@ -14,7 +14,11 @@ int (*eventloopIRC)(void);
 user *(*createUser)(char *uid, char *nick, char *ident, char *host, char *ip, char *vhost, char *gecos, char *modes);
 char *(*generateUID)(void);
 char (*isValidNick)(char *nick);
-extern char isUser(char *target);
+extern char isUser(char *target); /* char to conserve memory; use as a true/false int */
+/* setMode takes sending SID/UID, the target UID/channel and the already done mode string as arguments.
+ * Please use buildModes for create the mode string wherever possible to ensure compatibility between
+ * IRCds.
+ */
 extern void setMode(char *senderid, char *target, char *modes);
 
 int irc_socket;

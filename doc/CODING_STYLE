@@ -59,3 +59,8 @@ Things to note:
 Indentation:
 - Four spaces per level of indent, this includes one-line if follow-up
   statements, too.
+
+Naming:
+- change* functions are used to keep track of entities internally.
+- set* functions change attributes of an entity and sends the change to
+  the uplink and calls change* functions to update internal state.

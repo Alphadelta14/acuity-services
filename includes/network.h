@@ -7,9 +7,14 @@ usernode *userlist;
 channode *chanlist;
 
 int (*char2mode)(char modechar);
-char *buildModes(int count, ...);
+char *buildModes(int count, ...); /* Use this output in conjunction with setMode() */
 char checkModes(int *modeM, int count, ...);
 
+/* Module developers: These functions aren't interesting to you in the
+ * least. Seriously. They're just used internally to keep track of
+ * users/channels and their changes; you shouldn't need to fiddle with
+ * them unless you're coding an IRCd module.
+ */
 user *(*addUser)(char *uid, char *nick, char *ident, char *host, char *ip, char *vhost, char *gecos, char *modes);
 user *(*getUser)(char *uid);
 chan *(*addChannel)(char *name, char **modes);
