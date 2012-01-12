@@ -18,6 +18,11 @@ return failreturn ;\
 }\
 } while(0);
 
+/* Defining mode macros. These will be used to build/store modes:
+ * +a = MODE_A
+ * -a = (MODE_A|MODE_REMOVE)
+ * +V = (MODE_V|MODE_MAJOR)
+ */
 #define MODE_A 0x00000001
 #define MODE_B 0x00000002
 #define MODE_C 0x00000004
@@ -44,17 +49,18 @@ return failreturn ;\
 #define MODE_X 0x00800000
 #define MODE_Y 0x01000000
 #define MODE_Z 0x02000000
+/* Used to get the actual mode in buildModes in network.c */
 #define MODE_CHAR   0x03FFFFFF
-/* skip 0x0400000 */
-#define MODE_MAJOR  0x08000000
-#define MODE_REMOVE 0x10000000
+/* skip 0x0400000: "Special" bits after this gap */
+#define MODE_MAJOR  0x08000000 /* is uppercase mode character? */
+#define MODE_REMOVE 0x10000000 /* is mode to be removed? */
 
 typedef struct _line {
-    char *id;
-    char *command;
-    char **params;
-    int paramCount;
-    char *text;
+    char *id; /* UID/SID who sent the message */
+    char *command; /* The actual command */
+    char **params; /* Array of paramters */
+    int paramCount; /* Amount of parameters for the command */
+    char *text; /* The "final" parameter after a colon, if provided */
 } line;
 
 typedef struct _ptrnode {
@@ -63,6 +69,9 @@ typedef struct _ptrnode {
     struct _ptrnode *next;
 } ptrnode;
 
+/* metanode = key/value pair node. Used for configuration entries
+ * right now
+ */
 typedef struct _metanode {
     char *name;
     char *value;
