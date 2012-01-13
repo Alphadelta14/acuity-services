@@ -14,6 +14,11 @@
 #include <module.h>
 
 const char __version__[] = "Acuity-alpha1";
+/* Used for uptime checks:
+ * - WHOIS idle time
+ * - Later on maybe, STATS u or similar
+ * - Later on maybe, biggest uptime ever in db? */
+time_t starttime;
 
 /* local to just this file */
 void sighup();
@@ -95,6 +100,8 @@ int acuity_start(){
     if(!connectIRC(getConfigValue("HubHost"),getConfigValue("HubPort"))){
         return 1;
     }
+    /* Now, our uptime may start! */
+    starttime = time(NULL);
     eventloopIRC();
     return 0;
 }

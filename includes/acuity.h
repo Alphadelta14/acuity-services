@@ -2,6 +2,7 @@
 #define _ACUITY_H
 
 extern const char __version__[];
+extern time_t starttime;
 
 //#ifndef MODULE
 void (*aclog)(int level, char *fmt, ...);

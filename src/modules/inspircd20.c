@@ -594,6 +594,19 @@ UID (644) +9:
 /*SAVE (644) +2:
 	param[0]: 4CEAAAAAB
 	param[1]: 1325633878*/
+    } else if(!strcmp(l->command,"IDLE")){
+       if(l->paramCount>1){
+           aclog(LOG_DEBUG,"handleLineInsp(): We got a reply to IDLE, but didn't send any WHOISes?!");
+           return;
+       }
+       sprintf(s,":%s IDLE %s %ju 0\r\n",l->params[0],l->id,(uintmax_t)starttime);
+       send_raw_line(s);
+/*IDLE (392AAAAAH) +1:
+	param[0]: 5RVAAAAAA
+	-- This acts as a remote WHOIS, but is InspIRCd-specific! Handle it here.
+	   I've just decided that we'd just always send out the 0 as idle time.
+	   Honestly, who cares about real idle time? --culex
+*/
     } else {
         printLine(l);
     }
