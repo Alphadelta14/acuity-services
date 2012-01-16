@@ -342,6 +342,36 @@ void ns_group(char *uid, char *msg){
     ns_message(uid, "You have joined %s's group.", target);
 }
 
+void ns_identify(char *uid, char *msg){
+    user *U;
+    char *pass, *spaces, *modes;
+    nickaccount *acc;
+    U = getUser(uid);
+    if(!U)
+        return;
+    strtok_r(msg," ",&spaces);/* identify */
+    pass = strtok_r(NULL," ",&spaces);
+    if(!pass){
+        ns_message(uid,"Syntax: IDENTIFY password");
+        return;
+    }
+    acc = getNickAccountByNick(U->nick);
+    if(!acc){
+        ns_message(uid,"Your nick is not registered.");
+        return;
+    }
+    if(!matchPassword(pass, acc->group->passwd, acc->group->passmethod)){
+        ns_message(uid, "Invalid password.");
+        aclog(LOG_SERVICE, "%s!%s@%s entered an invalid password.\n", U->nick, U->ident, U->vhost);
+        return;
+    }
+    modes = buildModes(1, MODE_NSREGISTER);
+    setMode(nickserv->uid, uid, modes);
+    free(modes);
+    ns_message(uid, "You have identified for %s.", U->nick);
+    aclog(LOG_SERVICE, "%s!%s@%s has identified.", U->nick, U->ident, U->vhost);
+}
+
 void testCmd(char *uid, char *msg){
     char buff[128];
     sprintf(buff,":%s NOTICE %s :Test succeeded.\r\n",nickserv->uid,uid);
@@ -355,5 +385,6 @@ void INIT_MOD(){
     registerNickServCommand("test",testCmd);
     registerNickServCommand("register",ns_register);
     registerNickServCommand("group",ns_group);
+    registerNickServCommand("identify",ns_identify);
     loadModule("ns_test");
 }
