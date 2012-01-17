@@ -270,11 +270,12 @@ void ns_register(char *uid, char *msg){
         return;
     }
     createNickGroup(acc, pass, email);
-    ns_message(uid,"Your account has been registered with the password %s. Please remember this for when you identify to your new nick.",pass);
-    aclog(LOG_SERVICE,"New Nick: %s!%s@%s has registered their nick with the email %s.\n", U->nick, U->ident, U->host, email);
     modes = buildModes(1, MODE_NSREGISTER);
     setMode(nickserv->uid, uid, modes);
     free(modes);
+    setMetaValue(U->metadata, "nick", U->nick);
+    ns_message(uid,"Your account has been registered with the password %s. Please remember this for when you identify to your new nick.",pass);
+    aclog(LOG_SERVICE,"New Nick: %s!%s@%s has registered their nick with the email %s.\n", U->nick, U->ident, U->host, email);
 }
 
 void ns_group(char *uid, char *msg){
@@ -339,6 +340,7 @@ void ns_group(char *uid, char *msg){
         addNickToGroup(acc, newgroup);
         aclog(LOG_SERVICE,"Group: %s!%s@%s has grouped their nick to %s.\n", U->nick, U->ident, U->host, target);
     }
+    setMetaValue(U->metadata, "nick", U->nick);
     ns_message(uid, "You have joined %s's group.", target);
 }
 
@@ -368,6 +370,7 @@ void ns_identify(char *uid, char *msg){
     modes = buildModes(1, MODE_NSREGISTER);
     setMode(nickserv->uid, uid, modes);
     free(modes);
+    setMetaValue(U->metadata, "nick", U->nick);
     ns_message(uid, "You have identified for %s.", U->nick);
     aclog(LOG_SERVICE, "%s!%s@%s has identified.", U->nick, U->ident, U->vhost);
 }
