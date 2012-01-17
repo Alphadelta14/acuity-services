@@ -6,12 +6,7 @@
 #include <unistd.h>
 #include <dlfcn.h>
 
-#include <acuity.h>
-#include <events.h>
-#include <config.h>
-#include <ircd.h>
-#include <network.h>
-#include <module.h>
+#include <services.h>
 
 const char __version__[] = "Acuity-alpha1";
 /* Used for uptime checks:
@@ -27,10 +22,16 @@ int acuity_start();
 int acuity_stop();
 int acuity_rehash();
 
-void errprintf(int level, char *fmt, ...){
+void errprintf(int flags, ...){
+    char *fmt;
+    /*user *src;*/
     va_list args;
-    va_start(args,fmt);
-    vfprintf(stderr,fmt,args);
+    va_start(args, flags);
+    if(flags&LOGFLAG_SRC){
+        va_arg(args, user*);/* src */
+    }
+    fmt = va_arg(args, char*);
+    vfprintf(stderr, fmt, args);
     va_end(args);
 }
 

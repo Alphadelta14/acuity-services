@@ -5,7 +5,7 @@ extern const char __version__[];
 extern time_t starttime;
 
 //#ifndef MODULE
-void (*aclog)(int level, char *fmt, ...);
+void (*aclog)(int flags, ...);
 //#endif /* MODULE */
 #define LOG_DEBUG    0x001 /* Very, very verbose for debugging. DO NOT use on production nets */
 #define LOG_ERROR    0x002 /* Errors breaking Acuity or being close to that */
@@ -22,6 +22,10 @@ void (*aclog)(int level, char *fmt, ...);
                             * takeover attempt */
 #define LOG_IDFAIL   0x400 /* Failed IDENTIFY attempts. Succeeded ones aren't relevant for opers
                             * simply doing their job. If you REALLY want them, use LOG_DEBUG */
+
+#define LOGFLAG_SRC  0x1000000 /* Flag combined with other log options allows a user to specified 
+                            * as the source of a log entry */
+
 /* Default collections [DO NOT WRITE TO THESE, THEY'RE JUST USED FOR OUTPUT!] */
 #define LOG_STANDARD LOG_ERROR|LOG_OPTION|LOG_OVERRIDE|LOG_REQUEST|LOG_IDFAIL
 #define LOG_VERBOSE  LOG_ERROR|LOG_OPTION|LOG_OVERRIDE|LOG_REGISTER|LOG_REQUEST|LOG_ACCESS|LOG_REGAIN|LOG_IDFAIL
