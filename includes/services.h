@@ -9,6 +9,7 @@
 #include "ircd.h"
 #include "network.h"
 #include "config.h"
+#include <stdarg.h>
 
 typedef struct _service {
     char *uid;
@@ -41,9 +42,11 @@ typedef struct _setnode {
 } setnode;
 
 user *createService(char *nick, char *host, char *ident, char *gecos);
+void service_message(user *U, char *uid, char *str, ...);
+void vservice_message(user *U, char *uid, char *str, va_list args);
 void addHelp(helpnode **list, char *command, char *shorthelp, void (*longhelp)(char *uid, char *msg));
 void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *msg));
-
+void fireHelp(user *U, helpnode *list, char *uid, char *msg);
 
 /*typedef struct _serverconn {
     char *host;
