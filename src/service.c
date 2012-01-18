@@ -69,7 +69,7 @@ void fireHelp(user *U, helpnode *list, char *uid, char *msg){
                 if(node->longhelp)
                     node->longhelp(uid, msg);
                 else
-                    service_message(U, uid, "No additional help is available for this \x02%s\x02.", arg);
+                    service_message(U, uid, "No additional help is available for \x02%s\x02.", arg);
                 return;
             }
             node = node->next;
@@ -78,7 +78,7 @@ void fireHelp(user *U, helpnode *list, char *uid, char *msg){
     }else{
         while(node){
             if(node->shorthelp)
-                service_message(U, uid, "    \x02%12s\x02%s", node->command, node->shorthelp);
+                service_message(U, uid, "    \x02%-12s\x02%s", node->command, node->shorthelp);
             node = node->next;
         }
     }
