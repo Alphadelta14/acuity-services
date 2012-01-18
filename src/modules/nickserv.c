@@ -92,14 +92,9 @@ void fireNickServCommand(line *l){
 
 
 void ns_message(char *uid, char *str, ...){
-    char obuff[512], buff[512];
     va_list args;
-    va_start(args,str);
-    /* TODO: optionally PRIVMSG */
-    sprintf(obuff,":%s NOTICE %s :%s\r\n",nickserv->uid,uid,str);
-    vsprintf(buff,obuff,args);
-    va_end(args);
-    send_raw_line(buff);
+    va_start(args, str);
+    vservice_message(nickserv, uid, str, args);
 }
 
 char valid_email(char *email){

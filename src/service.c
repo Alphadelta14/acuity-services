@@ -26,7 +26,7 @@ void vservice_message(user *U, char *uid, char *str, va_list args){
 
 void service_message(user *U, char *uid, char *str, ...){
     va_list args;
-    va_start(args,str);
+    va_start(args, str);
     vservice_message(U, uid, str, args);
 }
 
