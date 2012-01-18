@@ -21,6 +21,7 @@ commandnode *nickservcmds = NULL;
 unsigned int cNickGroupID = 1;/* current group id */
 nicklist *registerednicks = NULL;
 nickgrouplist *registerednickgroups = NULL;
+helpnode *nickservHelp = NULL;
 int MODE_NSREGISTER = MODE_R;
 
 void createNickServ(line *L){
@@ -375,6 +376,14 @@ void ns_identify(char *uid, char *msg){
     aclog(LOG_SERVICE, "%s!%s@%s has identified.", U->nick, U->ident, U->vhost);
 }
 
+void addNickServHelp(char *command, char *shorthelp, void (*longhelp)(char *uid, char *msg)){
+    addHelp(&nickservHelp, command, shorthelp, longhelp);
+}
+
+void ns_help(char *uid, char *msg){
+    fireHelp(nickserv, nickservHelp, uid, msg);
+}
+
 void testCmd(char *uid, char *msg){
     char buff[128];
     sprintf(buff,":%s NOTICE %s :Test succeeded.\r\n",nickserv->uid,uid);
@@ -389,5 +398,8 @@ void INIT_MOD(){
     registerNickServCommand("register",ns_register);
     registerNickServCommand("group",ns_group);
     registerNickServCommand("identify",ns_identify);
+    registerNickServCommand("help",ns_help);
+    addNickServHelp("IDENTIFY", "Identifies your nick", NULL);
+    addNickServHelp("GROUP", "Groups your nick", NULL);
     loadModule("ns_test");
 }
