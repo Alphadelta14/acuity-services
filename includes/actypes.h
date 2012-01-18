@@ -23,6 +23,7 @@ return failreturn ;\
  * -a = (MODE_A|MODE_REMOVE)
  * +V = (MODE_V|MODE_MAJOR)
  */
+#define MODE_NONE     0x0
 #define MODE_A 0x00000001
 #define MODE_B 0x00000002
 #define MODE_C 0x00000004

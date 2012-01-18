@@ -23,6 +23,10 @@ char *buildModes(int count, ...){
     for(i = 0; i < count; i++){
         arg = va_arg(args, int);
         mode = (arg&MODE_CHAR);
+        if(mode == MODE_NONE){
+            modes[addPos++] = '/';/* filler character, will be replaced */
+            continue;
+        }
         j = 0;
         while(1<<j != mode) j++;
         modechar = j+0x41;
@@ -39,12 +43,16 @@ char *buildModes(int count, ...){
     else
         modes[remPos] = '-';
     if(addPos == 1){
-        for(i=0; i < count+2; i++){
-            modes[i] = modes[i+1];
-        }/* shift entire thing down */
+        modes[0] = '/';
     }else{
         modes[0] = '+';
     }
+    j = 0;
+    for(i=1; i < count+3; i++){
+        if(modes[i] != '/')
+            modes[j++] = modes[i];
+    }/* shift entire thing down */
+    modes[j] = '\0';
     va_end(args);
     return modes;
 }
