@@ -45,5 +45,9 @@ extern nickaccount *getNickAccountByNick(char *nick);
 extern unsigned int generateNickGroupID(void);
 extern void addNickServHelp(char *command, char *shorthelp, void (*longhelp)(char *uid, char *msg));
 extern void addNickServSetOption(char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *target, char *msg));
+void ns_message(char *uid, char *str, ...);
+extern char hasNickServPermission(char *uid, nickaccount *acc, int flags, ...);
+
+extern char valid_email(char *email);
 
 #endif /* NICKSERV_H */

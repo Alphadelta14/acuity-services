@@ -227,6 +227,12 @@ void addNickToGroup(nickaccount *acc, nickgroup *group){
     }
 }
 
+
+char hasNickServPermission(char *uid, nickaccount *acc, int flags, ...){
+    /* TODO: this whole thing */
+    return 1;
+}
+
 void ns_register(char *uid, char *msg){
     user *U;
     char *pass, *email, *spaces, *tmpconf, *modes;
@@ -388,6 +394,32 @@ void ns_set(char *uid, char *msg){
     fireSetOption(nickserv, nickservSetOpts, uid, getUser(uid)->nick, msg);
 }
 
+void ns_sethelp(char *uid, char *msg){
+    char *arg, *spaces;
+    setnode *node;
+    arg = strtok_r(msg, " ", &spaces);
+    node = nickservSetOpts;
+    if(arg){
+        while(node){
+            if(!strcasecmp(node->option, arg)){
+                if(node->longhelp)
+                    node->longhelp(uid, spaces);
+                else
+                    ns_message(uid, "No additional help is available for \x02%s\x02.", arg);
+                return;
+            }
+            node = node->next;
+        }
+        ns_message(uid, "No additional help is available for \x02%s\x02.", arg);
+    }else{
+        while(node){
+            if(node->shorthelp)
+                ns_message(uid, "    \x02%-12s\x02%s", node->option, node->shorthelp);
+            node = node->next;
+        }
+    }
+}
+
 void testCmd(char *uid, char *msg){
     char buff[128];
     sprintf(buff,":%s NOTICE %s :Test succeeded.\r\n",nickserv->uid,uid);
@@ -398,12 +430,14 @@ void testCmd(char *uid, char *msg){
 void INIT_MOD(){
     hook_event(EVENT_LINK, createNickServ);
     hook_event(EVENT_MESSAGE, fireNickServCommand);
+    registerNickServCommand("help",ns_help);
     registerNickServCommand("test",testCmd);
     registerNickServCommand("register",ns_register);
     registerNickServCommand("group",ns_group);
-    registerNickServCommand("identify",ns_identify);
-    registerNickServCommand("help",ns_help);
-    addNickServHelp("IDENTIFY", "Identifies your nick", NULL);
     addNickServHelp("GROUP", "Groups your nick", NULL);
-    loadModule("ns_test");
+    registerNickServCommand("identify",ns_identify);
+    addNickServHelp("IDENTIFY", "Identifies your nick", NULL);
+    registerNickServCommand("set",ns_set);
+    addNickServHelp("SET", "Sets options for your nick", ns_sethelp);
+    loadModule("ns_set_basic");
 }
