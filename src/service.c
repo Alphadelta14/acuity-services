@@ -41,6 +41,7 @@ void addHelp(helpnode **list, char *command, char *shorthelp, void (*longhelp)(c
                 node->longhelp = longhelp;
                 return;
             }
+            node = node->next;
         }
         safemalloc(node->next, helpnode, );
         node = node->next;
@@ -67,7 +68,7 @@ void fireHelp(user *U, helpnode *list, char *uid, char *msg){
         while(node){
             if(!strcasecmp(node->command, arg)){
                 if(node->longhelp)
-                    node->longhelp(uid, msg);
+                    node->longhelp(uid, spaces);
                 else
                     service_message(U, uid, "No additional help is available for \x02%s\x02.", arg);
                 return;
@@ -96,6 +97,7 @@ void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp
                 node->callback = callback;
                 return;
             }
+            node = node->next;
         }
         safemalloc(node->next, setnode, );
         node = node->next;
@@ -107,4 +109,27 @@ void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp
     node->shorthelp = shorthelp;
     node->longhelp = longhelp;
     node->callback = callback;
+}
+
+void fireSetOption(user *U, setnode *list, char *uid, char *msg){
+    char *option, *spaces;
+    setnode *node;
+    node = list;
+    strtok_r(msg, " ", &spaces);/* SET */
+    option = strtok_r(NULL, " ", &spaces);
+    if(!option){
+        service_message(U, uid, "Syntax: SET option parameters...");
+        return;
+    }
+    while(node){
+        if(!strcasecmp(node->option,option)){
+            if(node->callback)
+                node->callback(uid, spaces);
+            return;
+        }
+        node = node->next;
+    }
+    service_message(U, uid, "Syntax: Unknown option for SET, \x02%s\x02", option);
+
+
 }
