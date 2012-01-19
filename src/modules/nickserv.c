@@ -380,12 +380,12 @@ void ns_help(char *uid, char *msg){
     fireHelp(nickserv, nickservHelp, uid, msg);
 }
 
-void addNickServSetOption(char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *msg)){
+void addNickServSetOption(char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *target, char *msg)){
     addSetOption(&nickservSetOpts, option, shorthelp, longhelp, callback);
 }
 
 void ns_set(char *uid, char *msg){
-    fireSetOption(nickserv, nickservSetOpts, uid, msg);
+    fireSetOption(nickserv, nickservSetOpts, uid, getUser(uid)->nick, msg);
 }
 
 void testCmd(char *uid, char *msg){

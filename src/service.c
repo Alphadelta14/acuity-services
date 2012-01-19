@@ -85,7 +85,7 @@ void fireHelp(user *U, helpnode *list, char *uid, char *msg){
     }
 }
 
-void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *msg)){
+void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *target, char *msg)){
     setnode *node;
     node = *list;
     if(node){
@@ -111,7 +111,7 @@ void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp
     node->callback = callback;
 }
 
-void fireSetOption(user *U, setnode *list, char *uid, char *msg){
+void fireSetOption(user *U, setnode *list, char *uid, char *target, char *msg){
     char *option, *spaces;
     setnode *node;
     node = list;
@@ -123,8 +123,9 @@ void fireSetOption(user *U, setnode *list, char *uid, char *msg){
     }
     while(node){
         if(!strcasecmp(node->option,option)){
-            if(node->callback)
-                node->callback(uid, spaces);
+            if(node->callback){
+                node->callback(uid, target, spaces);
+            }
             return;
         }
         node = node->next;

@@ -37,7 +37,7 @@ typedef struct _setnode {
     char *option;
     char *shorthelp;
     void (*longhelp)(char *uid, char *msg);
-    void (*callback)(char *uid, char *msg);
+    void (*callback)(char *uid, char *target, char *msg);
     struct _setnode *next;
 } setnode;
 
@@ -45,9 +45,9 @@ user *createService(char *nick, char *host, char *ident, char *gecos);
 void service_message(user *U, char *uid, char *str, ...);
 void vservice_message(user *U, char *uid, char *str, va_list args);
 void addHelp(helpnode **list, char *command, char *shorthelp, void (*longhelp)(char *uid, char *msg));
-void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *msg));
+void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *target, char *msg));
 void fireHelp(user *U, helpnode *list, char *uid, char *msg);
-void fireSetOption(user *U, setnode *list, char *uid, char *msg);
+void fireSetOption(user *U, setnode *list, char *uid, char *target, char *msg);
 
 /*typedef struct _serverconn {
     char *host;
