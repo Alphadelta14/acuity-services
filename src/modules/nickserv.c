@@ -22,6 +22,7 @@ unsigned int cNickGroupID = 1;/* current group id */
 nicklist *registerednicks = NULL;
 nickgrouplist *registerednickgroups = NULL;
 helpnode *nickservHelp = NULL;
+setnode *nickservSetOpts = NULL;
 int MODE_NSREGISTER = MODE_R;
 
 void createNickServ(line *L){
@@ -377,6 +378,14 @@ void addNickServHelp(char *command, char *shorthelp, void (*longhelp)(char *uid,
 
 void ns_help(char *uid, char *msg){
     fireHelp(nickserv, nickservHelp, uid, msg);
+}
+
+void addNickServSetOption(char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *msg)){
+    addSetOption(&nickservSetOpts, option, shorthelp, longhelp, callback);
+}
+
+void ns_set(char *uid, char *msg){
+    fireSetOption(nickserv, nickservSetOpts, uid, msg);
 }
 
 void testCmd(char *uid, char *msg){
