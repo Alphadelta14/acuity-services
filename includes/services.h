@@ -48,6 +48,7 @@ void addHelp(helpnode **list, char *command, char *shorthelp, void (*longhelp)(c
 void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *target, char *msg));
 void fireHelp(user *U, helpnode *list, char *uid, char *msg);
 void fireSetOption(user *U, setnode *list, char *uid, char *target, char *msg);
+void fireSetHelp(user *U, setnode *list, char *uid, char *msg);
 
 /*typedef struct _serverconn {
     char *host;

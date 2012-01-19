@@ -132,5 +132,30 @@ void fireSetOption(user *U, setnode *list, char *uid, char *target, char *msg){
     }
     service_message(U, uid, "Syntax: Unknown option for SET, \x02%s\x02", option);
 
+}
 
+void fireSetHelp(user *U, setnode *list, char *uid, char *msg){
+    char *arg, *spaces;
+    setnode *node;
+    arg = strtok_r(msg, " ", &spaces);
+    node = list;
+    if(arg){
+        while(node){
+            if(!strcasecmp(node->option, arg)){
+                if(node->longhelp)
+                    node->longhelp(uid, spaces);
+                else
+                    service_message(U, uid, "No additional help is available for SET \x02%s\x02.", arg);
+                return;
+            }
+            node = node->next;
+        }
+        service_message(U, uid, "No additional help is available for SET \x02%s\x02.", arg);
+    }else{
+        while(node){
+            if(node->shorthelp)
+                service_message(U, uid, "    \x02%-12s\x02%s", node->option, node->shorthelp);
+            node = node->next;
+        }
+    }
 }

@@ -395,29 +395,7 @@ void ns_set(char *uid, char *msg){
 }
 
 void ns_sethelp(char *uid, char *msg){
-    char *arg, *spaces;
-    setnode *node;
-    arg = strtok_r(msg, " ", &spaces);
-    node = nickservSetOpts;
-    if(arg){
-        while(node){
-            if(!strcasecmp(node->option, arg)){
-                if(node->longhelp)
-                    node->longhelp(uid, spaces);
-                else
-                    ns_message(uid, "No additional help is available for \x02%s\x02.", arg);
-                return;
-            }
-            node = node->next;
-        }
-        ns_message(uid, "No additional help is available for \x02%s\x02.", arg);
-    }else{
-        while(node){
-            if(node->shorthelp)
-                ns_message(uid, "    \x02%-12s\x02%s", node->option, node->shorthelp);
-            node = node->next;
-        }
-    }
+    fireSetHelp(nickserv, nickservSetOpts, uid, msg);
 }
 
 void testCmd(char *uid, char *msg){
