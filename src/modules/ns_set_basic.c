@@ -29,7 +29,7 @@ void ns_set_email(char *uid, char *target, char *msg){
 }
 
 void ns_sethelp_email(char *uid, char *msg){
-    ns_message(uid, "Syntax: SET EMAIL\x02 email\x02");/* XXX: HAX here. How do you get \x02 next to an 'e'? (turns into \x02e by default)s */
+    ns_message(uid, "Syntax: SET EMAIL \x02\x65mail\x02");
 }
 
 
