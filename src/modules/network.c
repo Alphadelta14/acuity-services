@@ -87,6 +87,42 @@ char checkModes(int *modeM, int count, ...){
     return 1;
 }
 
+signed char irccmp(char *str1, char *str2){
+    int i, len;
+    char c1, c2;
+    len = strlen(str1);
+    for(i=0; i<len; i++){
+        c1 = str1[i];
+        c2 = str2[i];
+        if(c1 < c2)
+            return -1;
+        if(c1 > c2)
+            return 1;
+    }
+    if(str2[i])
+        return -1;
+    return 0;
+}
+
+signed char irccasecmp(char *str1, char *str2){
+    int i, len;
+    char c1, c2;
+    len = strlen(str1);
+    for(i=0; i<len; i++){
+        c1 = str1[i];
+        c2 = str2[i];
+        c1 = (c1 == '~') ? '~' : c1&0xDF;
+        c2 = (c2 == '~') ? '~' : c2&0xDF;
+        if(c1 < c2)
+            return -1;
+        if(c1 > c2)
+            return 1;
+    }
+    if(str2[i])
+        return -1;
+    return 0;
+}
+
 user *_addUser(char *uid, char *nick, char *ident, char *host, char *ip, char *vhost, char *gecos, char *modes){
     /* all data is copied so that anything can be erased without this structure being disturbed. It will clean up after itself later */
     user *U;
