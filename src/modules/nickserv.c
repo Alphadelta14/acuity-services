@@ -418,4 +418,5 @@ void INIT_MOD(){
     registerNickServCommand("set",ns_set);
     addNickServHelp("SET", "Sets options for your nick", ns_sethelp);
     loadModule("ns_set_basic");
+    loadModule("ns_info");
 }
