@@ -68,8 +68,33 @@ void ns_sethelp_password(char *uid, char *msg){
     ns_message(uid, "Syntax: SET PASSWORD \x02new password\x02");
 }
 
+void ns_set_nick(char *uid, char *target, char *msg){
+    /* changes NiCk caSiNg */
+    char *newnick, *spaces;
+    nickaccount *acc;
+    newnick = strtok_r(msg, " ", &spaces);
+    acc = getNickAccountByNick(target);
+    if(!hasNickServPermission(uid, acc, 2, "SETNICK", "SET")){
+        ns_message(uid, "Access denied.");
+        return;
+    }
+    if(irccasecmp(acc->nick, newnick)){
+        ns_message(uid, "Nicks need to match.");
+        return;
+    }
+    free(acc->nick);
+    safenmalloc(acc->nick, char, strlen(newnick)+1, );
+    strcpy(acc->nick, newnick);
+    ns_message(uid, "\x02%s\x02 is your new nick.", newnick);
+}
+
+void ns_sethelp_nick(char *uid, char *msg){
+    ns_message(uid, "Syntax: SET NICK \x02nIcK\x02");
+}
+
 
 void INIT_MOD(){
     addNickServSetOption("EMAIL", "Sets an email for the group", ns_sethelp_email, ns_set_email);
     addNickServSetOption("PASSWORD", "Sets a password for the group", ns_sethelp_password, ns_set_password);
+    addNickServSetOption("NICK", "Changes casing for a nick", ns_sethelp_nick, ns_set_nick);
 }
