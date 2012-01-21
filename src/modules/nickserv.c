@@ -185,6 +185,29 @@ nickgroup *createNickGroup(nickaccount *acc, char *pass, char *email){
     return group;
 }
 
+void deleteNickGroup(nickgroup *group){
+    nickgrouplist *groups, *prev;
+    if(!group)
+        return;
+    prev = groups = registerednickgroups;
+    if(groups->group == group){
+        registerednickgroups = groups->next;
+    } else {
+        while(groups){
+            if(groups->group == group){
+                prev->next = groups->next;
+                free(groups);
+                break;
+            }
+            prev = groups;
+            groups = groups->next;
+        }
+    }
+    free(group->email);
+    clearMetadata(group->metadata);
+    free(group);
+}
+
 nickaccount *createNickAccount(char *nick){
     nickaccount *acc;
     nicklist *nicks;
@@ -208,11 +231,34 @@ nickaccount *createNickAccount(char *nick){
     return acc;
 }
 
+void deleteNickAccount(nickaccount *acc){
+    nicklist *nicks, *prev;
+    prev = nicks = registerednicks;
+    if(nicks->acc == acc){
+        registerednicks = nicks->next;
+        free(nicks);
+    } else {
+        while(nicks){
+            if(nicks->acc == acc){
+                prev = nicks->next;
+                free(nicks);
+                break;
+            }
+            prev = nicks;
+            nicks = nicks->next;
+        }
+    }
+    removeNickFromGroup(acc, acc->group);
+    free(acc->nick);
+    clearMetadata(acc->metadata);
+    free(acc);
+}
+
 void addNickToGroup(nickaccount *acc, nickgroup *group){
     nicklist *members;
     if((!acc)||(!group))
         return;
-    /* removeNickFromGroup(nick, nick->group); */
+    removeNickFromGroup(nick, nick->group);
     acc->group = group;
     members = group->nicks;
     if(!members){
@@ -225,6 +271,29 @@ void addNickToGroup(nickaccount *acc, nickgroup *group){
         members->next->acc = acc;
         members->next->next = NULL;
     }
+}
+
+void removeNickFromGroup(nickaccount *acc, nickgroup *group){
+    nicklist *nicks, *prev;
+    prev = nicks = group->nicks;
+    if(nicks->acc == acc){
+        group->nicks = nicks->next;
+        free(nicks);
+    } else {
+        while(nicks){
+            if(nicks->acc == acc){
+                prev = nicks->next;
+                free(nicks);
+                break;
+            }
+            prev = nicks;
+            nicks = nicks->next;
+        }
+    }
+    if(group->main == acc) /* still a pointer */
+        group->main = group->nicks->acc;
+    if(!group->nicks)
+        deleteNickGroup(group);
 }
 
 

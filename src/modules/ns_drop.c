@@ -4,7 +4,6 @@
 void ns_drop(char *uid, char *msg){
     char *target, *spaces;
     nickaccount *acc;
-    nickgroup *group;
     strtok_r(msg, " ", &spaces);/* DROP */
     target = strtok_r(NULL, " ", &spaces);
     acc = getNickAccountByNick(target);
@@ -13,8 +12,6 @@ void ns_drop(char *uid, char *msg){
         return;
     }
     /* TODO: insert permissions here */
-    group = acc->group;
-    removeNickFromGroup(acc, group);
     deleteNickAccount(acc);
 }
 
