@@ -52,6 +52,7 @@ void addHelp(helpnode **list, char *command, char *shorthelp, void (*longhelp)(c
     node->command = command;
     node->shorthelp = shorthelp;
     node->longhelp = longhelp;
+    node->next = NULL;
 }
 
 void fireHelp(user *U, helpnode *list, char *uid, char *msg){
