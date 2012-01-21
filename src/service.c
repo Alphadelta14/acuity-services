@@ -17,11 +17,18 @@ user *createService(char *nick, char *host, char *ident, char *gecos){
 }
 
 void vservice_message(user *U, char *uid, char *str, va_list args){
-    char obuff[512], buff[512];
-    sprintf(obuff, ":%s NOTICE %s :%s\r\n", U->uid, uid, str);
+    char obuff[512], buff[512], *line, *lines;
+    /*sprintf(obuff, ":%s NOTICE %s :%s\r\n", U->uid, uid, str);
     vsprintf(buff, obuff, args);
     va_end(args);
-    send_raw_line(buff);
+    send_raw_line(buff);*/
+    vsprintf(obuff, str, args);
+    line = strtok_r(obuff, "\r\n", &lines);
+    while(line){
+        sprintf(buff, ":%s NOTICE %s :%s\r\n", U->uid, uid, line);
+        send_raw_line(buff);
+        line = strtok_r(NULL, "\n", &lines);
+    }
 }
 
 void service_message(user *U, char *uid, char *str, ...){
