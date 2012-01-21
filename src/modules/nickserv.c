@@ -323,7 +323,7 @@ void ns_register(char *uid, char *msg){
         return;
     }
     if(getNickGroupByEmail(email)){
-        ns_message(uid,"This email already belongs to a nick group. For help on grouping a nick, use HELP group.");
+        ns_message(uid,"This email already belongs to a nick group. For help on grouping a nick, use HELP GROUP.");
         return;
     }
     if(!valid_email(email)){
@@ -350,6 +350,28 @@ void ns_register(char *uid, char *msg){
     setMetaValue(U->metadata, "nick", U->nick);
     ns_message(uid,"Your account has been registered with the password %s. Please remember this for when you identify to your new nick.",pass);
     aclog(LOG_SERVICE,"New Nick: %s!%s@%s has registered their nick with the email %s.\n", U->nick, U->ident, U->host, email);
+}
+
+void ns_registerhelp(char *uid, char *msg){
+    char *tmpconf;
+
+    ns_message(uid,"Syntax: REGISTER password email");
+    ns_message(uid," ");
+    ns_message(uid,"The REGISTER command allows you to register a nick. Please note that");
+    ns_message(uid,"your password is case-sensitive and will be stored in a way that prevents");
+    ns_message(uid,"reading your plain-text password again. Therefore, it is recommended that");
+    ns_message(uid,"you choose a password you can remember.");
+
+    tmpconf = getConfigValue("NickServMinPasslen");
+    if(tmpconf)
+        ns_message(uid,"Additionally, your password must be at least %s characters long.",tmpconf);
+
+    ns_message(uid,"Your e-mail address will be treated confidentally, but checked for validity.");
+    ns_message(uid," ");
+    ns_message(uid,"Registering your nick prevents it from being used by others and allows you");
+    ns_message(uid,"to get automatic status in channels if you are on their access list and more.");
+    ns_message(uid," ");
+    ns_message(uid,"If you already own a nick, consider grouping it instead.");
 }
 
 void ns_group(char *uid, char *msg){
@@ -418,6 +440,22 @@ void ns_group(char *uid, char *msg){
     ns_message(uid, "You have joined %s's group.", target);
 }
 
+void ns_grouphelp(char *uid, char *msg){
+    char *tmpconf;
+
+    ns_message(uid,"Syntax: GROUP target password");
+    ns_message(uid," ");
+    ns_message(uid,"The GROUP command will add your current nickname to the specified target");
+    ns_message(uid,"group. A nick group points to just a single services account, so you may");
+    ns_message(uid,"own multiple nicks on the same account/same group. For example, if you");
+    ns_message(uid,"had the nicks A and B in your group, you could identify with either A or");
+    ns_message(uid,"B and have the same access. Additionally, someone could add B to channel");
+    ns_message(uid,"access and you would still get it form nick A.");
+    tmpconf = getConfigValue("NickServMaxGroupedNicks");
+    if(tmpconf)
+        ns_message(uid,"A group may contain %s nicks at maximum.", tmpconf);
+}
+
 void ns_identify(char *uid, char *msg){
     user *U;
     char *pass, *spaces, *modes;
@@ -482,13 +520,14 @@ void INIT_MOD(){
     registerNickServCommand("help",ns_help);
     registerNickServCommand("test",testCmd);
     registerNickServCommand("register",ns_register);
+    addNickServHelp("REGISTER", "Registers your nick", ns_registerhelp);
     registerNickServCommand("group",ns_group);
-    addNickServHelp("GROUP", "Groups your nick", NULL);
+    addNickServHelp("GROUP", "Groups your nick", ns_grouphelp);
     registerNickServCommand("identify",ns_identify);
     addNickServHelp("IDENTIFY", "Identifies your nick", NULL);
     registerNickServCommand("set",ns_set);
     addNickServHelp("SET", "Sets options for your nick", ns_sethelp);
     loadModule("ns_set_basic");
     loadModule("ns_info");
-    loadModule("ns_drop");
+    /* loadModule("ns_drop"); Broken */
 }
