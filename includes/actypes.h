@@ -84,5 +84,6 @@ void (*handleLine)(line *l);
 
 char *getMetaValue(metanode *metadata, char *key);
 metanode *setMetaValue(metanode *metadata, char *key, char *value);
+void clearMetadata(metanode *metadata);
 
 #endif /* _ACTYPES_H */

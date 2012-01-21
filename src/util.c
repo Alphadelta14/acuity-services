@@ -46,3 +46,15 @@ metanode *setMetaValue(metanode *metadata, char *key, char *value){
     node->next = newnode;
     return newnode;
 }
+
+void clearMetadata(metanode *metadata){
+    metanode *node, *prev;
+    node = metadata;
+    while(node){
+        prev = node;
+        free(prev->name);
+        free(prev->value);
+        node = node->next;
+        free(prev);
+    }
+}
