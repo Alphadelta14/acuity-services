@@ -125,7 +125,7 @@ nickaccount *getNickAccountByNick(char *nick){
     nicklist *nicks;
     nicks = registerednicks;
     while(nicks){
-        if(!strcasecmp(nicks->acc->nick,nick)){
+        if(!irccasecmp(nicks->acc->nick,nick)){
             return nicks->acc;
         }
         nicks = nicks->next;
@@ -137,7 +137,7 @@ nickgroup *getNickGroupByEmail(char *email){
     nickgrouplist *groups;
     groups = registerednickgroups;
     while(groups){
-        if(!strcasecmp(groups->group->email,email)){
+        if(!irccasecmp(groups->group->email,email)){
             return groups->group;
         }
         groups = groups->next;

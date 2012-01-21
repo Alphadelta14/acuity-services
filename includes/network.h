@@ -9,6 +9,8 @@ channode *chanlist;
 int (*char2mode)(char modechar);
 char *buildModes(int count, ...); /* Use this output in conjunction with setMode() */
 char checkModes(int *modeM, int count, ...);
+signed char irccmp(char *str1, char *str2);/* IRC casemapping versions of strcmp; use for nick comparison */
+signed char irccasecmp(char *str1, char *str2);
 
 /* Module developers: These functions aren't interesting to you in the
  * least. Seriously. They're just used internally to keep track of
