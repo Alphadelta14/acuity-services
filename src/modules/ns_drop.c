@@ -14,6 +14,7 @@ void ns_drop(char *uid, char *msg){
     }
     /* TODO: insert permissions here */
     deleteNickAccount(acc);
+    ns_message(uid, "\x02%s\x02 has been dropped", target);
 }
 
 void ns_help_drop(char *uid, char *msg){

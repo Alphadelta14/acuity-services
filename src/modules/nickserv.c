@@ -290,10 +290,12 @@ void removeNickFromGroup(nickaccount *acc, nickgroup *group){
             nicks = nicks->next;
         }
     }
+    if(!group->nicks){
+        deleteNickGroup(group);
+        return;
+    }
     if(group->main == acc) /* still a pointer */
         group->main = group->nicks->acc;
-    if(!group->nicks)
-        deleteNickGroup(group);
 }
 
 
@@ -488,4 +490,5 @@ void INIT_MOD(){
     addNickServHelp("SET", "Sets options for your nick", ns_sethelp);
     loadModule("ns_set_basic");
     loadModule("ns_info");
+    loadModule("ns_drop");
 }
