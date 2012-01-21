@@ -240,7 +240,7 @@ void deleteNickAccount(nickaccount *acc){
     } else {
         while(nicks){
             if(nicks->acc == acc){
-                prev = nicks->next;
+                prev->next = nicks->next;
                 free(nicks);
                 break;
             }
@@ -258,7 +258,7 @@ void addNickToGroup(nickaccount *acc, nickgroup *group){
     nicklist *members;
     if((!acc)||(!group))
         return;
-    removeNickFromGroup(nick, nick->group);
+    removeNickFromGroup(acc, acc->group);
     acc->group = group;
     members = group->nicks;
     if(!members){
@@ -282,7 +282,7 @@ void removeNickFromGroup(nickaccount *acc, nickgroup *group){
     } else {
         while(nicks){
             if(nicks->acc == acc){
-                prev = nicks->next;
+                prev->next = nicks->next;
                 free(nicks);
                 break;
             }

@@ -1,5 +1,6 @@
 #include <services.h>
 #include "nickserv.h"
+#include <string.h>
 
 void ns_drop(char *uid, char *msg){
     char *target, *spaces;
@@ -15,7 +16,7 @@ void ns_drop(char *uid, char *msg){
     deleteNickAccount(acc);
 }
 
-void ns_drop_info(char *uid, char *msg){
+void ns_help_drop(char *uid, char *msg){
     ns_message(uid, "Syntax: DROP \x02nick\x02");
 }
 
