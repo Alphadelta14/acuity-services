@@ -110,6 +110,7 @@ void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp
     node->shorthelp = shorthelp;
     node->longhelp = longhelp;
     node->callback = callback;
+    node->next = NULL;
 }
 
 void fireSetOption(user *U, setnode *list, char *uid, char *target, char *msg){
