@@ -23,7 +23,11 @@ void ns_info(char *uid, char *msg){
 }
 
 void ns_help_info(char *uid, char *msg){
-    ns_message(uid, "Syntax: INFO \x02nick\x02");
+    ns_message(uid,
+        "Syntax: INFO nick\n"
+        " \n"
+        "The INFO command allows you to see whether a nick is registered, its\n"
+        "e-mail address and to what group it belongs.");
 }
 
 void INIT_MOD(){
