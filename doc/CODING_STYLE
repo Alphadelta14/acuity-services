@@ -64,3 +64,18 @@ Naming:
 - change* functions are used to keep track of entities internally.
 - set* functions change attributes of an entity and sends the change to
   the uplink and calls change* functions to update internal state.
+- Modules are to be named after the abbreviated form of their service
+  and the command (family) they provide. E.g., NickServ => ns. If more
+  than one service start with the same letter, keep going until you
+  reach a point without conflict. HelpServ/HostServ: hes and hos.
+- Command names should be as self-descriptive as possible.
+- Commands which allow overrides through services staff must begin with
+  "F." For example, NickServ DROP drops accounts, so the equivalent for
+  services staff to override would be FDROP and are to be implemented
+  in the same module as the regular command.
+- The command callbacks are to have the same name as the module (E.g.,
+  ns_drop.c implements NickServ DROP and its callback is ns_drop()).
+  The help function is to be called the same as the module, adding
+  "help" to it (E.g., help function for NickServ DROP is ns_drophelp)
+- Help entries follow ^BCOMMANDNAME ^_param^_ [^_optionalparam^_]^B for
+  syntax display.
