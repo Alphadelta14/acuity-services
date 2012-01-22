@@ -25,7 +25,7 @@ void ns_set_email(char *uid, char *target, char *msg){
     }
     grp = acc->group;
     free(grp->email);
-    safenmalloc(grp->email, char, strlen(email)+1, );
+    safenmallocvoid(grp->email, char, strlen(email)+1);
     strcpy(grp->email, email);
     ns_message(uid, "\x02%s\x02 is your new email.", email);
 }
@@ -83,7 +83,7 @@ void ns_set_nick(char *uid, char *target, char *msg){
         return;
     }
     free(acc->nick);
-    safenmalloc(acc->nick, char, strlen(newnick)+1, );
+    safenmallocvoid(acc->nick, char, strlen(newnick)+1);
     strcpy(acc->nick, newnick);
     ns_message(uid, "\x02%s\x02 is your new nick.", newnick);
 }

@@ -9,6 +9,7 @@
 #include <time.h>
 
 #include <acuity.h>
+#include <actypes.h>
 #include <ircd.h>
 #include <services.h>
 #include <config.h>
@@ -201,26 +202,16 @@ char isUser(char *target){
 void updateRemoteConf(char *info){
     metanode *node, *next;
     char *key, *value;
+
     key = strtok(info,"=");
     value = strtok(NULL," ");
     if(!value)
         return;
-    next = (metanode*)malloc(sizeof(metanode));
-    if(!next){
-        aclog(LOG_ERROR,"Failed to create metanode for remoteconf. Could not allocate memory.\n");
-        return;
-    }
-    next->name = (char*)malloc(sizeof(char)*(strlen(key)+1));
-    if(!next->name){
-        aclog(LOG_ERROR,"Failed to create metanode key for remoteconf. Could not allocate memory.\n");
-        return;
-    }
+
+    safemallocvoid(next,metanode);
+    safenmallocvoid(next->name,char,sizeof(char)*(strlen(key)+1));
     strcpy(next->name, key);
-    next->value = (char*)malloc(sizeof(char)*(strlen(value)+1));
-    if(!next->value){
-        aclog(LOG_ERROR,"Failed to create metanode value for remoteconf. Could not allocate memory.\n");
-        return;
-    }
+    safenmallocvoid(next->value,char,sizeof(char)*(strlen(value)+1));
     strcpy(next->value, value);
     next->next = NULL;
     
@@ -233,22 +224,10 @@ void updateRemoteConf(char *info){
     }
     node = next;
     while(key){
-        next = (metanode*)malloc(sizeof(metanode));
-        if(!next){
-            aclog(LOG_ERROR,"Failed to create metanode for remoteconf. Could not allocate memory.\n");
-            return;
-        }
-        next->name = (char*)malloc(sizeof(char)*(strlen(key)+1));
-        if(!next->name){
-            aclog(LOG_ERROR,"Failed to create metanode key for remoteconf. Could not allocate memory.\n");
-            return;
-        }
+        safemallocvoid(next,metanode);
+        safenmallocvoid(next->name,char,sizeof(char)*(strlen(key)+1));
         strcpy(next->name, key);
-        next->value = (char*)malloc(sizeof(char)*(strlen(value)+1));
-        if(!next->value){
-            aclog(LOG_ERROR,"Failed to create metanode value for remoteconf. Could not allocate memory.\n");
-            return;
-        }
+        safenmallocvoid(next->value,char,sizeof(char)*(strlen(value)+1));
         strcpy(next->value, value);
         next->next = NULL;
         node->next = next;

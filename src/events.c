@@ -16,7 +16,7 @@ void hook_event(int event, void (*callback)(line *L)){
     N = &eventlist[event];
     while(N->next)
         N = N->next;
-    N->next = (eventnode*)malloc(sizeof(eventnode));
+    safemallocvoid(N->next, eventnode);
     if(!N->next){
         aclog(LOG_ERROR,"hook_event failed: unable to allocate memory\n");
         return;
@@ -57,25 +57,13 @@ void addTimerEvent(void(*callback)(int argc, char **argv), time_t expires, int a
     } else {
         s = NULL;
     }
-    t = (timer*)malloc(sizeof(timer));
-    if(!t){
-        aclog(LOG_ERROR,"addTimerEvent failed: unable to allocate memory for timer.\n");
-        return;
-    }
+    safemallocvoid(t,timer);
     va_start(ap, argc);
-    argv = (char**)malloc(sizeof(char*)*argc);
-    if(!argv){
-        aclog(LOG_ERROR,"addTimerEvent failed: unable to allocate memory for argument vector.\n");
-        return;
-    }
+    safenmallocvoid(argv,char*,sizeof(char*)*argc);
     for(i=0; i<argc; i++){
         /* TODO: Sanity - is there a legitimate next argument? */
         arg = va_arg(ap, char*);
-        argv[i] = (char*)malloc(sizeof(char)*(strlen(arg)+1));
-        if(!argv[i]){
-            aclog(LOG_ERROR,"addTimerEvent failed: unable to allocate memory for single argument.\n");
-            return;
-        }
+        safenmallocvoid(argv[i],char,sizeof(char)*(strlen(arg)+1));
         strcpy(argv[i], arg);
     }
     t->callback = callback;

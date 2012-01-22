@@ -128,11 +128,8 @@ user *_addUser(char *uid, char *nick, char *ident, char *host, char *ip, char *v
     user *U;
     usernode *node, *next;
     int i, modelen;
-    U = (user*)malloc(sizeof(user));
-    if(!U){
-        aclog(LOG_ERROR,"Failed to create user. Could not allocate memory.\n");
-        return NULL;
-    }
+    safemalloc(U,user,NULL);
+    /* Not using safenmalloc here because this does its own error checking */
 #define COPYARG2USER(field) do { \
     U-> field = (char*)malloc(sizeof(char)*(strlen( field )+1)); \
     if(!U-> field ){ \
@@ -163,21 +160,13 @@ user *_addUser(char *uid, char *nick, char *ident, char *host, char *ip, char *v
     U->chans = NULL;
     U->metadata = NULL;
     if(!userlist){
-        userlist = (usernode*)malloc(sizeof(usernode));
-        if(!userlist){
-            aclog(LOG_ERROR,"Failed to create userlist after creating user. Could not allocate memory.\n");
-            return NULL;
-        }
+        safemalloc(userlist,usernode,NULL);
         userlist->U = U;
         userlist->next = NULL;
     } else {
         node = userlist;
         while(node->next) node = node->next;
-        next = (usernode*)malloc(sizeof(usernode));
-        if(!next){
-            aclog(LOG_ERROR,"Failed to create usernode after creating user. Could not allocate memory.\n");
-            return NULL;
-        }
+        safemalloc(next,usernode,NULL);
         next->U = U;
         next->next = NULL;
         node->next = next;
@@ -212,7 +201,7 @@ void changeNick(user *U, char *nick){
     if(!U||!nick)
         return;
     free(U->nick);
-    safenmalloc(U->nick, char, strlen(nick)+1, );
+    safenmallocvoid(U->nick, char, strlen(nick)+1);
     strcpy(U->nick, nick);
 }
 
@@ -241,12 +230,8 @@ chan *_addChannel(char *name, char **pmodes){
     if((C = getChannel(name))){
         return C;
     }
-    C = (chan*)malloc(sizeof(chan));
-    if(!C){
-        aclog(LOG_ERROR,"Failed to create channel. Could not allocate memory.\n");
-        return NULL;
-    }
-    C->name = (char*)malloc(sizeof(char)*(strlen(name)+1));
+    safemalloc(C,chan,NULL);
+    safenmalloc(C->name,char,sizeof(char)*(strlen(name)+1),NULL);
     strcpy(C->name, name);
     C->topic = NULL;
     C->metadata = NULL;
@@ -267,21 +252,13 @@ chan *_addChannel(char *name, char **pmodes){
     }
     C->users = NULL;
     if(!chanlist){
-        chanlist = (channode*)malloc(sizeof(channode));
-        if(!chanlist){
-            aclog(LOG_ERROR,"Failed to create chanlist after creating channel. Could not allocate memory.\n");
-            return NULL;
-        }
+        safemalloc(chanlist,channode,NULL);
         chanlist->C = C;
         chanlist->next = NULL;
     } else {
         node = chanlist;
         while(node->next) node = node->next;
-        next = (channode*)malloc(sizeof(channode));
-        if(!next){
-            aclog(LOG_ERROR,"Failed to create channode after creating channel. Could not allocate memory.\n");
-            return NULL;
-        }
+        safemalloc(next,channode,NULL);
         next->C = C;
         next->next = NULL;
         node->next = next;
@@ -313,16 +290,8 @@ statusnode *_addChannelUser(chan *C, user *U){
 
     if((!C)||(!U))
         return NULL;
-    unode = (statusnode*)malloc(sizeof(statusnode));
-    if(!unode){
-        aclog(LOG_ERROR,"Failed to create status node for channel user list. Could not allocate memory.\n");
-        return NULL;
-    }
-    cnode = (channode*)malloc(sizeof(channode));
-    if(!cnode){
-        aclog(LOG_ERROR,"Failed to create channel node for user channel list. Could not allocate memory.\n");
-        return NULL;
-    }
+    safemalloc(unode,statusnode,NULL);
+    safemalloc(cnode,channode,NULL);
     unode->U = U;
     unode->next = NULL;
     unode->modeMinor = 0;

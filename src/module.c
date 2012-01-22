@@ -6,6 +6,7 @@
 
 #include <module.h>
 #include <acuity.h>
+#include <actypes.h>
 
 modnode *modlist = NULL;
 
@@ -15,11 +16,7 @@ void *loadModule(const char *modname){
     modnode *node, *prev;
 
     aclog(LOG_MODINFO,"Loading module: %s",modname);
-    fname = (char*)malloc(sizeof(char)*(strlen(modname)+13));//"modules/%s.so"
-    if(!fname){
-        aclog(LOG_ERROR,"Not enough memory to allocate `fname` for `loadModule`.\n");
-        return NULL;
-    }
+    safenmalloc(fname,char,sizeof(char)*(strlen(modname)+13),NULL);/*"modules/%s.so"*/
     strcpy(fname,"modules/");
     strcat(fname,modname);
     strcat(fname,".so");
@@ -32,16 +29,8 @@ void *loadModule(const char *modname){
     }
     *(void **) (&initModule) = dlsym(modhandle, "INIT_MOD");
 
-    node = (modnode*)malloc(sizeof(modnode));
-    if(!node){
-        aclog(LOG_ERROR,"Could not saved loaded module %s. Could not allocate memory.\n",modname);
-        return modhandle;
-    }
-    node->name = (char*)malloc(sizeof(char)*(strlen(modname)+1));
-    if(!node->name){
-        aclog(LOG_ERROR,"Could not save module node name. Could not allocate memory.\n");
-        return modhandle;
-    }
+    safemalloc(node,modnode,NULL);
+    safenmalloc(node->name,char,sizeof(char)*(strlen(modname)+1),NULL);
     strcpy(node->name,modname);
     node->next = NULL;
     if(!modlist)

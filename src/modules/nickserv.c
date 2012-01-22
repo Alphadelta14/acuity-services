@@ -47,16 +47,8 @@ void createNickServ(line *L){
 
 void registerNickServCommand(char *cmd, void (*callback)(char *uid, char *msg)){
     commandnode *node, *prev;
-    node = (commandnode*)malloc(sizeof(commandnode));
-    if(!node){
-        aclog(LOG_ERROR, "Failed to register %s as a NickServ command. Failed to allocate memory.\n",cmd);
-        return;
-    }
-    node->cmd = (char*)malloc(sizeof(char)*(strlen(cmd)+1));
-    if(!node->cmd){
-        aclog(LOG_ERROR, "Failed to register %s as a NickServ command. Failed to allocate memory for command name.\n",cmd);
-        return;
-    }
+    safemallocvoid(node,commandnode);
+    safenmallocvoid(node->cmd,char,sizeof(char)*(strlen(cmd)+1));
     strcpy(node->cmd,cmd);
     node->callback = callback;
     node->next = NULL;
@@ -262,12 +254,12 @@ void addNickToGroup(nickaccount *acc, nickgroup *group){
     acc->group = group;
     members = group->nicks;
     if(!members){
-        safemalloc(group->nicks,nicklist, );
+        safemallocvoid(group->nicks,nicklist);
         group->nicks->acc = acc;
         group->nicks->next = NULL;
     } else {
         while(members->next) members = members->next;
-        safemalloc(members->next,nicklist, );
+        safemallocvoid(members->next,nicklist);
         members->next->acc = acc;
         members->next->next = NULL;
     }

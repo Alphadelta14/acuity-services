@@ -20,7 +20,7 @@ void setConfigValue(char *name, char *value){
 
     C = conflist;
     if(!C){
-        C = (confval*)malloc(sizeof(confval));
+        safemallocvoid(C,confval);
         C->name = name;
         C->value = value;
         conflist = C;
@@ -40,7 +40,7 @@ void setConfigValue(char *name, char *value){
         C->value = value;
         return;
     }
-    d = (confval*)malloc(sizeof(confval));
+    safemallocvoid(d,confval);
     d->name = name;
     d->value = value;
     d->next = NULL;
@@ -78,9 +78,9 @@ void loadDefaults(){
 
     def = &defaultconf[0];
     while(def->name){
-        name = (char*)malloc(sizeof(char)*strlen(def->name)+1);
+        safenmallocvoid(name,char,sizeof(char)*strlen(def->name)+1);
         strcpy(name, def->name);
-        value = (char*)malloc(sizeof(char)*strlen(def->value)+1);
+        safenmallocvoid(value,char,sizeof(char)*strlen(def->value)+1);
         strcpy(value, def->value);
         setConfigValue(name,value);
         def++;
@@ -107,7 +107,7 @@ void loadConfig(){
             continue;
         }
         len = strlen(tmp)+1;
-        name = (char*)malloc(sizeof(char)*len);
+        safenmallocvoid(name,char,sizeof(char)*len);
         strcpy(name, tmp);
         match = fscanf(f,"\"%[^\"]\"\n",tmp);
         if(match==EOF) break;
@@ -116,7 +116,7 @@ void loadConfig(){
             continue;
         }
         len = strlen(tmp)+1;
-        value = (char*)malloc(sizeof(char)*len);
+        safenmallocvoid(value,char,sizeof(char)*len);
         strcpy(value, tmp);
         setConfigValue(name,value);
         /*printf("Setconf: %s to %s\n",name,value);*/

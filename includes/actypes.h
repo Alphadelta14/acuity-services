@@ -5,16 +5,29 @@
 
 #define safemalloc(variable,type,failreturn) do{ variable = ( type *)malloc(sizeof( type ));\
 if(! variable ){\
-aclog(LOG_ERROR,"Could not allocate memory for %s.\n", #variable );\
+aclog(LOG_ERROR,"Could not allocate memory for %s!\n", #variable );\
 return failreturn ;\
 }\
 } while(0);
 
+#define safemallocvoid(variable,type) do{ variable = ( type *)malloc(sizeof( type ));\
+if(! variable ){\
+aclog(LOG_ERROR,"Could not allocate memory for %s!\n", #variable );\
+return;\
+}\
+} while(0);
 
 #define safenmalloc(variable,type,size,failreturn) do{ variable = ( type *)malloc( size );\
 if(! variable ){\
-aclog(LOG_ERROR,"Could not allocate memory for %s.\n", #variable );\
+aclog(LOG_ERROR,"Could not allocate memory for %s!\n", #variable );\
 return failreturn ;\
+}\
+} while(0);
+
+#define safenmallocvoid(variable,type,size) do{ variable = ( type *)malloc( size );\
+if(! variable ){\
+aclog(LOG_ERROR,"Could not allocate memory for %s!\n", #variable );\
+return;\
 }\
 } while(0);
 
