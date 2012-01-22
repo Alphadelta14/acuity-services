@@ -549,7 +549,7 @@ UID (644) +9:
         else
             U = getUser(l->params[0]);
         if(l->paramCount == 2){
-            changeMode(&U->modeMinor, l->params[2]);
+            changeMode(&U->modeMinor, l->params[1]);
         } /* TODO: the last parameter */
 /*MODE (644) +3:
 	param[0]: 644AAAAAA
