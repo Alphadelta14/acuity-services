@@ -536,13 +536,13 @@ void INIT_MOD(){
     registerNickServCommand("help",ns_help);
     registerNickServCommand("test",testCmd);
     registerNickServCommand("register",ns_register);
-    addNickServHelp("REGISTER", "Registers your nick", ns_registerhelp);
+    addNickServHelp("REGISTER", "Registers your nick",ns_registerhelp);
     registerNickServCommand("group",ns_group);
-    addNickServHelp("GROUP", "Groups your nick", ns_grouphelp);
+    addNickServHelp("GROUP", "Groups your nick",ns_grouphelp);
     registerNickServCommand("identify",ns_identify);
-    addNickServHelp("IDENTIFY", "Identifies your nick", ns_identifyhelp);
+    addNickServHelp("IDENTIFY", "Identifies your nick",ns_identifyhelp);
     registerNickServCommand("set",ns_set);
-    addNickServHelp("SET", "Sets options for your nick", ns_sethelp);
+    addNickServHelp("SET", "Sets options for your nick",ns_sethelp);
     loadModule("ns_set_basic");
     loadModule("ns_info");
     /* loadModule("ns_drop"); Broken */
