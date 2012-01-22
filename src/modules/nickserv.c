@@ -353,25 +353,30 @@ void ns_register(char *uid, char *msg){
 }
 
 void ns_registerhelp(char *uid, char *msg){
+    /*ns_message(uid,"moo\r\nsupermoo");
+    return;*/
     char *tmpconf;
 
-    ns_message(uid,"Syntax: REGISTER password email");
-    ns_message(uid," ");
-    ns_message(uid,"The REGISTER command allows you to register a nick. Please note that");
-    ns_message(uid,"your password is case-sensitive and will be stored in a way that prevents");
-    ns_message(uid,"reading your plain-text password again. Therefore, it is recommended that");
-    ns_message(uid,"you choose a password you can remember.");
+    ns_message(uid,
+        "Syntax: REGISTER password email\n"
+        " \n"
+        "The REGISTER command allows you to register a nick. Please note that\n"
+        "your password is case-sensitive and will be stored in a way that\n"
+        "prevents reading your plain-text password again. Therefore, it is\n"
+        "recommended that you choose a password you can remember.");
 
     tmpconf = getConfigValue("NickServMinPasslen");
     if(tmpconf)
         ns_message(uid,"Additionally, your password must be at least %s characters long.",tmpconf);
 
-    ns_message(uid,"Your e-mail address will be treated confidentally, but checked for validity.");
-    ns_message(uid," ");
-    ns_message(uid,"Registering your nick prevents it from being used by others and allows you");
-    ns_message(uid,"to get automatic status in channels if you are on their access list and more.");
-    ns_message(uid," ");
-    ns_message(uid,"If you already own a nick, consider grouping it instead.");
+    ns_message(uid,"Your e-mail address will be treated confidentally, but\n"
+        "checked for validity.\n"
+        " \n"
+        "Registering your nick prevents it from being used by others and allows\n"
+        "you to get automatic status in channels if you are on their access\n"
+        "list and more.\n"
+        " \n"
+        "If you already own a nick, consider grouping it instead.");
 }
 
 void ns_group(char *uid, char *msg){
@@ -443,14 +448,16 @@ void ns_group(char *uid, char *msg){
 void ns_grouphelp(char *uid, char *msg){
     char *tmpconf;
 
-    ns_message(uid,"Syntax: GROUP target password");
-    ns_message(uid," ");
-    ns_message(uid,"The GROUP command will add your current nickname to the specified target");
-    ns_message(uid,"group. A nick group points to just a single services account, so you may");
-    ns_message(uid,"own multiple nicks on the same account/same group. For example, if you");
-    ns_message(uid,"had the nicks A and B in your group, you could identify with either A or");
-    ns_message(uid,"B and have the same access. Additionally, someone could add B to channel");
-    ns_message(uid,"access and you would still get it form nick A.");
+    ns_message(uid,
+        "Syntax: GROUP target password\n"
+        " \n"
+        "The GROUP command will add your current nickname to the specified\n"
+        "target group. A nick group points to just a single services account,\n"
+        "so you may own multiple nicks on the same account/same group. For\n"
+        "example, if you had the nicks A and B in your group, you could\n"
+        "identify with either A or B and have the same access. Additionally,\n"
+        "someone could add B to channel access and you would still get it\n"
+        "from nick A.");
     tmpconf = getConfigValue("NickServMaxGroupedNicks");
     if(tmpconf)
         ns_message(uid,"A group may contain %s nicks at maximum.", tmpconf);
