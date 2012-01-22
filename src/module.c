@@ -15,7 +15,7 @@ void *loadModule(const char *modname){
     void *modhandle;
     modnode *node, *prev;
 
-    aclog(LOG_MODINFO,"Loading module: %s",modname);
+    aclog(LOG_DEBUG,"Loading module: %s",modname);
     safenmalloc(fname,char,sizeof(char)*(strlen(modname)+13),NULL);/*"modules/%s.so"*/
     strcpy(fname,"modules/");
     strcat(fname,modname);
@@ -23,7 +23,7 @@ void *loadModule(const char *modname){
     modhandle = dlopen(fname,RTLD_NOW|RTLD_GLOBAL);
     free(fname);
     if(!modhandle){
-        aclog(LOG_MODINFO,"  [FAIL]\n");
+        aclog(LOG_DEBUG,"  [FAIL]\n");
         aclog(LOG_ERROR,"Could not open '%s' module: %s\n",modname,dlerror());
         return NULL;
     }
@@ -40,7 +40,7 @@ void *loadModule(const char *modname){
         while(prev->next) prev = prev->next;
         prev->next = node;
     }
-    aclog(LOG_MODINFO,"  [OK]\n");
+    aclog(LOG_DEBUG,"  [OK]\n");
     if(initModule)
         initModule();
     return modhandle;
@@ -65,12 +65,12 @@ void loadDependencies(int count, ...){
     va_list args;
     char *modname;
     va_start(args,count);
-    aclog(LOG_MODINFO,"%d depends\n",count);
+    aclog(LOG_DEBUG,"%d depends\n",count);
     for(i=0;i<count;i++){
         modname = va_arg(args,char*);
-        aclog(LOG_MODINFO,"Checking for %s\n",modname);
+        aclog(LOG_DEBUG,"Checking for %s\n",modname);
         if(!isModuleLoaded(modname)){
-            aclog(LOG_MODINFO,"Loading depended module: %s\t\n",modname);
+            aclog(LOG_DEBUG,"Loading depended module: %s\t\n",modname);
             loadModule(modname);
         }
     }

@@ -341,7 +341,7 @@ void ns_register(char *uid, char *msg){
     free(modes);
     setMetaValue(U->metadata, "nick", U->nick);
     ns_message(uid,"Your account has been registered with the password %s. Please remember this for when you identify to your new nick.",pass);
-    aclog(LOG_SERVICE,"New Nick: %s!%s@%s has registered their nick with the email %s.\n", U->nick, U->ident, U->host, email);
+    aclog(LOG_REGISTER,"New Nick: %s!%s@%s has registered their nick with the email %s.\n", U->nick, U->ident, U->host, email);
 }
 
 void ns_registerhelp(char *uid, char *msg){
@@ -400,7 +400,7 @@ void ns_group(char *uid, char *msg){
     }
     if(!matchPassword(pass, newgroup->passwd, newgroup->passmethod)){
         /* TODO: password fail counter implementation */
-        aclog(LOG_DEBUG | LOG_SERVICE, "%s failed to group to %s's group. Password did not match.",U->nick, target);
+        aclog(LOG_DEBUG | LOG_NOAUTH, "%s failed to group to %s's group. Password did not match.",U->nick, target);
         ns_message(uid, "Access denied. Password does not match.");
         return;
     }
@@ -412,7 +412,7 @@ void ns_group(char *uid, char *msg){
     tmpconf = getConfigValue("NickServMaxGroupedNicks");
     if(tmpconf){
         if(membercount >= atoi(tmpconf)){
-            aclog(LOG_DEBUG | LOG_SERVICE, "%s failed to group to %s's group. Max members has already been reached.",U->nick, target);
+            aclog(LOG_DEBUG, "%s failed to group to %s's group. Max members has already been reached.",U->nick, target);
             ns_message(uid, "This group already has %d members in it. No more can be added.", membercount);
             return;
         }
@@ -420,7 +420,7 @@ void ns_group(char *uid, char *msg){
     acc = getNickAccountByNick(U->nick);
     if(!acc){
         acc = createNickAccount(U->nick);
-        aclog(LOG_SERVICE,"New Nick: %s!%s@%s has grouped their new nick to %s.\n", U->nick, U->ident, U->host, target);
+        aclog(LOG_REGISTER,"New Nick: %s!%s@%s has grouped their new nick to %s.\n", U->nick, U->ident, U->host, target);
         modes = buildModes(1, MODE_NSREGISTER);
         setMode(nickserv->uid, uid, modes);
         free(modes);
@@ -431,7 +431,7 @@ void ns_group(char *uid, char *msg){
             return;
         }
         addNickToGroup(acc, newgroup);
-        aclog(LOG_SERVICE,"Group: %s!%s@%s has grouped their nick to %s.\n", U->nick, U->ident, U->host, target);
+        aclog(LOG_REGISTER,"Group: %s!%s@%s has grouped their nick to %s.\n", U->nick, U->ident, U->host, target);
     }
     setMetaValue(U->metadata, "nick", U->nick);
     ns_message(uid, "You have joined %s's group.", target);
@@ -476,7 +476,7 @@ void ns_identify(char *uid, char *msg){
     }
     if(!matchPassword(pass, acc->group->passwd, acc->group->passmethod)){
         ns_message(uid, "Invalid password.");
-        aclog(LOG_SERVICE, "%s!%s@%s entered an invalid password.\n", U->nick, U->ident, U->vhost);
+        aclog(LOG_NOAUTH, "%s!%s@%s entered an invalid password.\n", U->nick, U->ident, U->vhost);
         return;
     }
     modes = buildModes(1, MODE_NSREGISTER);
@@ -484,7 +484,7 @@ void ns_identify(char *uid, char *msg){
     free(modes);
     setMetaValue(U->metadata, "nick", U->nick);
     ns_message(uid, "You have identified for %s.", U->nick);
-    aclog(LOG_SERVICE, "%s!%s@%s has identified.", U->nick, U->ident, U->vhost);
+    aclog(LOG_DEBUG, "%s!%s@%s has identified.", U->nick, U->ident, U->vhost);
 }
 
 void ns_identifyhelp(char *uid, char *msg){
