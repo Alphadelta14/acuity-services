@@ -471,6 +471,7 @@ void ns_identify(char *uid, char *msg){
     if(!U)
         return;
     strtok_r(msg," ",&spaces);/* identify */
+    /* XXX: Allow for id from another nick? /ns id culex pass */
     pass = strtok_r(NULL," ",&spaces);
     if(!pass){
         ns_message(uid,"Syntax: IDENTIFY password");
@@ -492,6 +493,14 @@ void ns_identify(char *uid, char *msg){
     setMetaValue(U->metadata, "nick", U->nick);
     ns_message(uid, "You have identified for %s.", U->nick);
     aclog(LOG_SERVICE, "%s!%s@%s has identified.", U->nick, U->ident, U->vhost);
+}
+
+void ns_identifyhelp(char *uid, char *msg){
+    ns_message(uid,
+        "Syntax: IDENTIFY password\n"
+        " \n"
+        "Identifies you for the current nick. Please note that the password is\n"
+        "case-sensitive!");
 }
 
 void addNickServHelp(char *command, char *shorthelp, void (*longhelp)(char *uid, char *msg)){
@@ -531,7 +540,7 @@ void INIT_MOD(){
     registerNickServCommand("group",ns_group);
     addNickServHelp("GROUP", "Groups your nick", ns_grouphelp);
     registerNickServCommand("identify",ns_identify);
-    addNickServHelp("IDENTIFY", "Identifies your nick", NULL);
+    addNickServHelp("IDENTIFY", "Identifies your nick", ns_identifyhelp);
     registerNickServCommand("set",ns_set);
     addNickServHelp("SET", "Sets options for your nick", ns_sethelp);
     loadModule("ns_set_basic");
