@@ -22,7 +22,7 @@ void ns_info(char *uid, char *msg){
     /* TODO: hooks */
 }
 
-void ns_help_info(char *uid, char *msg){
+void ns_infohelp(char *uid, char *msg){
     ns_message(uid,
         "Syntax: INFO nick\n"
         " \n"
@@ -32,5 +32,5 @@ void ns_help_info(char *uid, char *msg){
 
 void INIT_MOD(){
     registerNickServCommand("info",ns_info);
-    addNickServHelp("INFO", "Displays information about a nick", ns_help_info);
+    addNickServHelp("INFO", "Displays information about a nick", ns_infohelp);
 }

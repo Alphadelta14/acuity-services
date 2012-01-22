@@ -17,11 +17,15 @@ void ns_drop(char *uid, char *msg){
     ns_message(uid, "\x02%s\x02 has been dropped", target);
 }
 
-void ns_help_drop(char *uid, char *msg){
-    ns_message(uid, "Syntax: DROP \x02nick\x02");
+void ns_drophelp(char *uid, char *msg){
+    ns_message(uid,
+        "Syntax: DROP nick\n"
+        " \n"
+        "Drops a nick. This deletes the entire account associated with it. You\n"
+        "will want to be very cautious with this command!");
 }
 
 void INIT_MOD(){
     registerNickServCommand("drop", ns_drop);
-    addNickServHelp("DROP", "Drops a nick from a group", ns_help_drop);
+    addNickServHelp("DROP", "Drops a nick from a group", ns_drophelp);
 }
