@@ -23,7 +23,7 @@ void vservice_message(user *U, char *uid, char *str, va_list args){
     va_end(args);
     send_raw_line(buff);*/
     vsprintf(obuff, str, args);
-    line = strtok_r(obuff, "\r\n", &lines);
+    line = strtok_r(obuff, "\n", &lines);
     while(line){
         sprintf(buff, ":%s NOTICE %s :%s\r\n", U->uid, uid, line);
         send_raw_line(buff);
