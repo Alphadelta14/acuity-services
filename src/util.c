@@ -47,6 +47,29 @@ metanode *setMetaValue(metanode *metadata, char *key, char *value){
     return newnode;
 }
 
+void delMetaValue(metanode *metadata, char *key){
+    metanode *node, *prev;
+    prev = node = metadata;
+    if(!metadata)
+        return;
+    if(!strcasecmp(key, node->name)){
+        free(node->value);
+        metadata = node->next;
+        free(node);
+        return;
+    }
+    while(node){
+        if(!strcasecmp(key, node->name)){
+            free(node->value);
+            prev->next = node->next;
+            free(node);
+            return;
+        }
+        prev = node;
+        node = node->next;
+    }
+}
+
 void clearMetadata(metanode *metadata){
     metanode *node, *prev;
     node = metadata;
