@@ -60,6 +60,7 @@ void delMetaValue(metanode *metadata, char *key){
     }
     while(node){
         if(!strcasecmp(key, node->name)){
+            free(node->name);
             free(node->value);
             prev->next = node->next;
             free(node);
