@@ -559,5 +559,6 @@ void INIT_MOD(){
     loadModule("ns_info");
     loadModule("ns_set_time");
     loadModule("ns_list");
+    loadModule("ns_protection");
     /* loadModule("ns_drop"); Broken */
 }
