@@ -10,6 +10,7 @@
 #include "network.h"
 #include "config.h"
 #include <stdarg.h>
+#include <time.h>
 
 typedef struct _service {
     char *uid;
@@ -41,6 +42,8 @@ typedef struct _setnode {
     struct _setnode *next;
 } setnode;
 
+extern char defaultTZ;
+
 user *createService(char *nick, char *host, char *ident, char *gecos);
 void service_message(user *U, char *uid, char *str, ...);
 void vservice_message(user *U, char *uid, char *str, va_list args);
@@ -49,6 +52,7 @@ void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp
 void fireHelp(user *U, helpnode *list, char *uid, char *msg);
 void fireSetOption(user *U, setnode *list, char *uid, char *target, char *msg);
 void fireSetHelp(user *U, setnode *list, char *uid, char *msg);
+char *getTimeString(char *tz, time_t from);
 
 /*typedef struct _serverconn {
     char *host;

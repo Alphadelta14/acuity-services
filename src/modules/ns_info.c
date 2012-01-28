@@ -19,7 +19,7 @@ void ns_info(char *uid, char *msg){
     ns_message(uid, "Information about \x02%s\x02:", acc->nick);
     ns_message(uid, "Email:      \x02%s\x02", group->email);
     ns_message(uid, "Group:      \x02%s\x02", group->main->nick);
-    ns_message(uid, "Registered: \x02%s\x02", strtok(asctime(gmtime(&acc->regtime)),"\n"));
+    ns_message(uid, "Registered: \x02%s\x02", getLocalTimeString(uid, acc->regtime));
     /* TODO: hooks */
 }
 

@@ -3,6 +3,11 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <time.h>
+
+/* reserved variables for time functions */
+char timeZoneStr[40];/*"{$ASCTIME(26)} UTC+12:00"; it will be overwritten, with every timezone get call */
+char defaultTZ = '\x30';
 
 user *createService(char *nick, char *host, char *ident, char *gecos){
     char *uid;
@@ -167,4 +172,29 @@ void fireSetHelp(user *U, setnode *list, char *uid, char *msg){
             node = node->next;
         }
     }
+}
+
+char *getTimeString(char *tz, time_t from){
+    char tzChar, sign;
+    int hour, minute;
+    if(tz)
+        tzChar = tz[0];
+    else
+        tzChar = 0;
+    if(tzChar == '\xff')
+        tzChar = defaultTZ;
+    hour = tzChar>>2;
+    minute = (tzChar&0x3)*15;
+    from += minute*60 + hour*3600 + 43200;
+    if(tzChar<48){
+        sign = '-';
+        hour = 12-hour;
+    }else if(tzChar==48){
+        sign = '\0';/* hide +00:00 */
+    }else{
+        sign = '+';
+        hour -= 12;
+    }
+    snprintf(timeZoneStr, 40, "%s UTC%c%02d:%02d", strtok(asctime(gmtime(&from)),"\n"), sign, hour, minute);
+    return timeZoneStr;
 }

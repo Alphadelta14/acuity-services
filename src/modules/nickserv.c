@@ -14,6 +14,7 @@ Potential Configuration Values:
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "nickserv.h"
 
 user *nickserv = NULL;
@@ -294,6 +295,21 @@ void removeNickFromGroup(nickaccount *acc, nickgroup *group){
 char hasNickServPermission(char *uid, nickaccount *acc, int flags, ...){
     /* TODO: this whole thing */
     return 1;
+}
+
+char *getLocalTimeString(char *uid, time_t time){
+    user *U;
+    nickaccount *acc;
+    char *tzInfo;
+    U = getUser(uid);
+    if(!U)
+        return getTimeString("\xff", time);
+    if(!(acc = getNickAccountByNick(U->nick)))
+        return getTimeString("\xff", time);
+    tzInfo = getMetaValue(acc->metadata, "timezone");
+    if(!tzInfo)
+        return getTimeString("\xff", time);
+    return getTimeString(tzInfo, time);
 }
 
 void ns_register(char *uid, char *msg){
