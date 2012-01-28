@@ -63,6 +63,25 @@ tz[0] (1 char) contains all data:
     ns_message(uid, "Your timezone has been changed. It is currently %s.", getLocalTimeString(uid, time(NULL))); 
 }
 
+void ns_set_time_dst(char *uid, nickaccount *acc, char *arg){
+    char dst[] = "W";
+    /* store a string: S = Summer, W = Winter into metadata */
+    if(!arg){
+        ns_message(uid, "Syntax: SET TIME DST {\x02ON\x02|\x02OFF\x02}");
+        return;
+    }
+    if(!strcasecmp("ON", arg)){
+        dst[0] = 'S';
+    }else if(!strcasecmp("OFF", arg)){
+        dst[0] = 'W';
+    }else{
+        ns_message(uid, "Syntax: SET TIME DST {\x02ON\x02|\x02OFF\x02}");
+        return;
+    }
+    setMetaValue(&acc->group->metadata, "DST", dst);
+    ns_message(uid, "Daylight savings time is now %s. It is currently %s.", (dst[0]=='W')?"OFF":"ON" , getLocalTimeString(uid, time(NULL))); 
+}
+
 void ns_set_time(char *uid, char *target, char *msg){
     char *cmd, *arg, *spaces;
     nickaccount *acc;
@@ -77,10 +96,13 @@ void ns_set_time(char *uid, char *target, char *msg){
         ns_message(uid, "Syntax: SET TIME \x02{ZONE|DST} arguments\x02");
         return;
     }
-    if(!strcasecmp("ZONE", cmd))
+    if(!strcasecmp("ZONE", cmd)){
         ns_set_time_zone(uid, acc, arg);
-    else
+    }else if(!strcasecmp("DST", cmd)){
+        ns_set_time_dst(uid, acc, arg);
+    }else{
         ns_message(uid, "Syntax: SET TIME \x02{ZONE|DST} arguments\x02");
+    }
 }
 
 void ns_sethelp_time(char *uid, char *msg){

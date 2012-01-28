@@ -16,7 +16,7 @@ char *getMetaValue(metanode **metadata, char *key){
 }
 
 metanode *setMetaValue(metanode **metadata, char *key, char *value){
-    metanode *node, *newnode;
+    metanode *node, *prev, *newnode;
     if(!*metadata){
         safemalloc(newnode,metanode,NULL);
         safenmalloc(newnode->name,char,strlen(key)+1,NULL);
@@ -27,7 +27,7 @@ metanode *setMetaValue(metanode **metadata, char *key, char *value){
         *metadata = newnode;
         return newnode;
     }
-    node = *metadata;
+    prev = node = *metadata;
     while(node){
         if(!strcasecmp(key,node->name)){
             free(node->value);
@@ -35,6 +35,7 @@ metanode *setMetaValue(metanode **metadata, char *key, char *value){
             strcpy(node->value,value);
             return node;
         }
+        prev = node;
         node = node->next;
     }
     safemalloc(newnode,metanode,NULL);
@@ -43,7 +44,7 @@ metanode *setMetaValue(metanode **metadata, char *key, char *value){
     safenmalloc(newnode->value,char,strlen(value)+1,NULL);
     strcpy(newnode->value,value);
     newnode->next = NULL;
-    node->next = newnode;
+    prev->next = newnode;
     return newnode;
 }
 

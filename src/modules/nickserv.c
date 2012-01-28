@@ -300,16 +300,20 @@ char hasNickServPermission(char *uid, nickaccount *acc, int flags, ...){
 char *getLocalTimeString(char *uid, time_t time){
     user *U;
     nickaccount *acc;
-    char *tzInfo;
+    char *tzInfo, *dstInfo, newTzInfo[] = "\x30";/* newTzInfo gets overwritten */
     U = getUser(uid);
     if(!U)
         return getTimeString("\xff", time);
     if(!(acc = getNickAccountByNick(U->nick)))
         return getTimeString("\xff", time);
     tzInfo = getMetaValue(&acc->group->metadata, "TIMEZONE");
+    dstInfo = getMetaValue(&acc->group->metadata, "DST");
     if(!tzInfo)
         return getTimeString("\xff", time);
-    return getTimeString(tzInfo, time);
+    newTzInfo[0] = tzInfo[0];
+    if(dstInfo&&(dstInfo[0]=='S'))
+        newTzInfo[0] += 4;
+    return getTimeString(newTzInfo, time);
 }
 
 void ns_register(char *uid, char *msg){
