@@ -1,7 +1,15 @@
 #include <services.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "nickserv.h"
+
+int guestSeed = 0;
+int guestRnd(){/* generate a 16 bit number */
+    guestSeed += 0x527;
+    guestSeed &= 0xFFFF;
+    return guestSeed;
+}
 
 void ns_set_kill(char *uid, char *target, char *msg){
     /*
@@ -59,5 +67,6 @@ void ns_sethelp_kill(char *uid, char *msg){
 }
 
 void INIT_MOD(){
+    guestSeed = time(NULL)&0xFFFF;
     addNickServSetOption("KILL", "Sets the time for the user to identify before having their nick changed.", ns_sethelp_kill, ns_set_kill);
 }

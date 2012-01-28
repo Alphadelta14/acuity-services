@@ -24,5 +24,5 @@ void ns_listgroups(char *uid, char *msg){
 
 void INIT_MOD(){
     registerNickServCommand("list", ns_list);
-    registerNickServCommand("listgroups", ns_listgroups;
+    registerNickServCommand("listgroups", ns_listgroups);
 }
