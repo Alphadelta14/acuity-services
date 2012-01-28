@@ -95,9 +95,9 @@ typedef struct _metanode {
 line (*parseLine)(char *data);
 void (*handleLine)(line *l);
 
-char *getMetaValue(metanode *metadata, char *key);
-metanode *setMetaValue(metanode *metadata, char *key, char *value);
-void delMetaValue(metanode *metadata, char *key);
-void clearMetadata(metanode *metadata);
+char *getMetaValue(metanode **metadata, char *key);
+metanode *setMetaValue(metanode **metadata, char *key, char *value);
+void delMetaValue(metanode **metadata, char *key);
+void clearMetadata(metanode **metadata);
 
 #endif /* _ACTYPES_H */

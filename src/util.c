@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *getMetaValue(metanode *metadata, char *key){
+char *getMetaValue(metanode **metadata, char *key){
     metanode *node;
-    node = metadata;
+    node = *metadata;
     while(node){
         if(!strcasecmp(key,node->name)){
             return node->value;
@@ -15,20 +15,20 @@ char *getMetaValue(metanode *metadata, char *key){
     return NULL;
 }
 
-metanode *setMetaValue(metanode *metadata, char *key, char *value){
+metanode *setMetaValue(metanode **metadata, char *key, char *value){
     metanode *node, *newnode;
-    if(!metadata){
+    if(!*metadata){
         safemalloc(newnode,metanode,NULL);
         safenmalloc(newnode->name,char,strlen(key)+1,NULL);
         strcpy(newnode->name,key);
         safenmalloc(newnode->value,char,strlen(value)+1,NULL);
         strcpy(newnode->value,value);
         newnode->next = NULL;
-        metadata = newnode;
-        return metadata;
+        *metadata = newnode;
+        return newnode;
     }
-    node = metadata;
-    while(node->next){
+    node = *metadata;
+    while(node){
         if(!strcasecmp(key,node->name)){
             free(node->value);
             safenmalloc(node->value,char,strlen(value)+1,NULL);
@@ -47,14 +47,14 @@ metanode *setMetaValue(metanode *metadata, char *key, char *value){
     return newnode;
 }
 
-void delMetaValue(metanode *metadata, char *key){
+void delMetaValue(metanode **metadata, char *key){
     metanode *node, *prev;
-    prev = node = metadata;
-    if(!metadata)
+    prev = node = *metadata;
+    if(!*metadata)
         return;
     if(!strcasecmp(key, node->name)){
         free(node->value);
-        metadata = node->next;
+        *metadata = node->next;
         free(node);
         return;
     }
@@ -71,9 +71,9 @@ void delMetaValue(metanode *metadata, char *key){
     }
 }
 
-void clearMetadata(metanode *metadata){
+void clearMetadata(metanode **metadata){
     metanode *node, *prev;
-    node = metadata;
+    node = *metadata;
     while(node){
         prev = node;
         free(prev->name);
@@ -81,4 +81,5 @@ void clearMetadata(metanode *metadata){
         node = node->next;
         free(prev);
     }
+    *metadata = NULL;
 }

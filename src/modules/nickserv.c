@@ -197,7 +197,7 @@ void deleteNickGroup(nickgroup *group){
         }
     }
     free(group->email);
-    clearMetadata(group->metadata);
+    clearMetadata(&group->metadata);
     free(group);
 }
 
@@ -243,7 +243,7 @@ void deleteNickAccount(nickaccount *acc){
     }
     removeNickFromGroup(acc, acc->group);
     free(acc->nick);
-    clearMetadata(acc->metadata);
+    clearMetadata(&acc->metadata);
     free(acc);
 }
 
@@ -306,7 +306,7 @@ char *getLocalTimeString(char *uid, time_t time){
         return getTimeString("\xff", time);
     if(!(acc = getNickAccountByNick(U->nick)))
         return getTimeString("\xff", time);
-    tzInfo = getMetaValue(acc->metadata, "timezone");
+    tzInfo = getMetaValue(&acc->group->metadata, "TIMEZONE");
     if(!tzInfo)
         return getTimeString("\xff", time);
     return getTimeString(tzInfo, time);
@@ -355,7 +355,7 @@ void ns_register(char *uid, char *msg){
     modes = buildModes(1, MODE_NSREGISTER);
     setMode(nickserv->uid, uid, modes);
     free(modes);
-    setMetaValue(U->metadata, "nick", U->nick);
+    setMetaValue(&U->metadata, "nick", U->nick);
     ns_message(uid,"Your account has been registered with the password %s. Please remember this for when you identify to your new nick.",pass);
     aclog(LOG_REGISTER,"New Nick: %s!%s@%s has registered their nick with the email %s.\n", U->nick, U->ident, U->host, email);
 }
@@ -449,7 +449,7 @@ void ns_group(char *uid, char *msg){
         addNickToGroup(acc, newgroup);
         aclog(LOG_REGISTER,"Group: %s!%s@%s has grouped their nick to %s.\n", U->nick, U->ident, U->host, target);
     }
-    setMetaValue(U->metadata, "nick", U->nick);
+    setMetaValue(&U->metadata, "nick", U->nick);
     ns_message(uid, "You have joined %s's group.", target);
 }
 
@@ -498,7 +498,7 @@ void ns_identify(char *uid, char *msg){
     modes = buildModes(1, MODE_NSREGISTER);
     setMode(nickserv->uid, uid, modes);
     free(modes);
-    setMetaValue(U->metadata, "nick", U->nick);
+    setMetaValue(&U->metadata, "nick", U->nick);
     ns_message(uid, "You have identified for %s.", U->nick);
     aclog(LOG_DEBUG, "%s!%s@%s has identified.", U->nick, U->ident, U->vhost);
 }
@@ -553,5 +553,6 @@ void INIT_MOD(){
     addNickServHelp("SET", "Sets options for your nick",ns_sethelp);
     loadModule("ns_set_basic");
     loadModule("ns_info");
+    loadModule("ns_set_time");
     /* loadModule("ns_drop"); Broken */
 }
