@@ -5,9 +5,9 @@
 #include "nickserv.h"
 
 int guestSeed = 0;
-int guestRnd(){/* generate a 16 bit number */
+int guestRnd(){/* generate a 4 digit number, max 8191 */
     guestSeed += 0x527;
-    guestSeed &= 0xFFFF;
+    guestSeed &= 0x1FFF;
     return guestSeed;
 }
 
