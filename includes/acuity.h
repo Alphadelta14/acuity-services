@@ -35,4 +35,6 @@ void (*aclog)(int flags, ...);
 /* Output debug: */
 #define LOG_ODEBUG   LOG_ERROR|LOG_OPTION|LOG_OVERRIDE|LOG_REGISTER|LOG_REQUEST|LOG_ACCESS|LOG_REGAIN|LOG_NOAUTH|LOG_DEBUG
 
+void panic();
+
 #endif /* _ACUITY_H */

@@ -67,11 +67,14 @@ int acuity_start(){
     //int i;
     //eventnode *en;
 
-    fpid = fopen("acuity.pid","w");
-    fprintf(fpid,"%d",getpid());
+    fpid = fopen("acuity.pid", "w");
+    fprintf(fpid, "%d", getpid());
     fclose(fpid);
-    signal(SIGHUP,sighup);
-    signal(SIGQUIT,sigquit);
+    signal(SIGHUP, sighup);
+    signal(SIGQUIT, sigquit);
+#ifndef DEVEL
+    signal(SIGSEGV, panic);/* only hook on released versions */
+#endif /* DEVEL */
     aclog = &errprintf;
     /*en = eventlist;
     for(i=0; i<NUM_EVENTS; i++){
