@@ -35,6 +35,8 @@ struct _nickaccount {
 };
 
 extern user *nickserv;
+extern nicklist *registerednicks;
+extern nickgrouplist *registerednickgroups;
 extern void registerNickServCommand(char *cmd, void (*callback)(char *uid, char *msg));
 extern nickaccount *createNickAccount(char *nick);
 extern void deleteNickAccount(nickaccount *acc);
