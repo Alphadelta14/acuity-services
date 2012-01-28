@@ -23,6 +23,32 @@ void ns_info(char *uid, char *msg){
     /* TODO: hooks */
 }
 
+void ns_ginfo(char *uid, char *msg){
+    char *target, *spaces;
+    nickaccount *acc;
+    nickgroup *group;
+    nicklist *nicks;
+    int count = 0;
+    strtok_r(msg, " ", &spaces);/* GINFO */
+    target = strtok_r(NULL, " ", &spaces);
+    acc = getNickAccountByNick(target);
+    if(!acc){
+        ns_message(uid, "\x02%s\x02 is not registered", target);
+        return;
+    }
+    /* TODO: hasNickServPermission(uid, acc, 2, "GINFO", "INFO")), etc */
+    group = acc->group;
+    ns_message(uid, "Main nick:  \x02%s\x02", group->main->nick);
+    ns_message(uid, "Email:      \x02%s\x02", group->email);
+    ns_message(uid, "Members: ");
+    nicks = group->nicks;
+    while(nicks){
+        count++;
+        ns_message(uid, "     %d:     \x02%s\x02", count, nicks->acc->nick);
+        nicks = nicks->next;
+    }
+}
+
 void ns_infohelp(char *uid, char *msg){
     ns_message(uid,
         "Syntax: INFO nick\n"
@@ -34,4 +60,6 @@ void ns_infohelp(char *uid, char *msg){
 void INIT_MOD(){
     registerNickServCommand("info",ns_info);
     addNickServHelp("INFO", "Displays information about a nick", ns_infohelp);
+    registerNickServCommand("ginfo",ns_ginfo);
+    addNickServHelp("GINFO", "Displays information about a group", NULL);
 }
