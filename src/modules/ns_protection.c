@@ -14,7 +14,7 @@ int guestRnd(){/* generate a 4 digit number, max 8191 */
 
 
 void ns_protection_enforce(int argc, char **argv){
-    char *guestNick, defaultGuest[] = "Guest", buff[512];
+    char *guestNick, defaultGuest[] = "Guest", buff[512], *newNick;
     user *U;
     if(argc<2)
         return;
@@ -23,7 +23,7 @@ void ns_protection_enforce(int argc, char **argv){
         return;/* logged out */
     if(irccasecmp(argv[1],U->nick))
         return;/* changed nick */
-    if(!irccasecmp(argv[1],getMetaValue(&U->metadata, "NICK")))
+    if((newNick = getMetaValue(&U->metadata, "NICK"))&&(!irccasecmp(argv[1],newNick)))
         return;/* identified */
     guestNick = getConfigValue("NickServGuestNick");
     if(!guestNick)
@@ -41,7 +41,7 @@ void ns_protection_onnick(line *L){
     U = getUser(L->id);/* U->nick already represents the new nick */
     if(!U)
         return;
-    newNick = L->params[0];
+    newNick = U->nick;
     newAcc = getNickAccountByNick(newNick);
     if(!newAcc){
         delMetaValue(&U->metadata, "NICK");
@@ -90,6 +90,52 @@ void ns_protection_onnick(line *L){
         }
     default:
         addTimerEvent(ns_protection_enforce, time(NULL)+wait, 2, L->id, newNick);
+    }
+}
+
+void ns_protection_onconnect(line *L){
+    user *U;
+    char *uid, *newNick, *waitStr, *tmpconf, defaultWait[] = "", *args[] = {"", ""};
+    nickaccount *newAcc;
+    int wait;
+    uid = L->params[0];
+    U = getUser(uid);
+    if(!U)
+        return;
+    newNick = U->nick;
+    newAcc = getNickAccountByNick(newNick);
+    if(!newAcc)
+        return;
+    ns_message(uid, "This nick is registered. Please identify if this is your nick.");
+    if((waitStr = getMetaValue(&newAcc->metadata, "KILLWAIT")))
+        wait = (unsigned char)waitStr[0];
+    else
+        waitStr = defaultWait;
+    switch(waitStr[0]){
+    case -2:
+        return;
+    case -1:
+        args[0] = uid;
+        args[1] = newNick;
+        ns_protection_enforce(2, args);
+        break;
+    case 0:
+        tmpconf = getConfigValue("NickServDefaultProtection");
+        if(tmpconf){
+            wait = atoi(tmpconf);
+            if(wait==-2)
+                return;
+            if(wait==-1){
+                args[0] = uid;
+                args[1] = newNick;
+                ns_protection_enforce(2, args);
+                break;
+            }
+        }else{
+            wait = 20;
+        }
+    default:
+        addTimerEvent(ns_protection_enforce, time(NULL)+wait, 2, uid, newNick);
     }
 }
 
@@ -150,7 +196,7 @@ void ns_sethelp_kill(char *uid, char *msg){
 
 void INIT_MOD(){
     hook_event(EVENT_NICK, ns_protection_onnick);
-    /*TODO: hook_event(EVENT_CONNECT, ns_protection_onconnect);*/
+    hook_event(EVENT_CONNECT, ns_protection_onconnect);
     guestSeed = time(NULL)&0xFFFF;
     addNickServSetOption("KILL", "Sets the time for the user to identify before having their nick changed.", ns_sethelp_kill, ns_set_kill);
 }
