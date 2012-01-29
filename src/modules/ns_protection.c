@@ -15,8 +15,16 @@ int guestRnd(){/* generate a 4 digit number, max 8191 */
 
 void ns_protection_enforce(int argc, char **argv){
     char *guestNick, defaultGuest[] = "Guest", buff[512];
+    user *U;
     if(argc<2)
         return;
+    U = getUser(argv[0]);
+    if(!U)
+        return;/* logged out */
+    if(irccasecmp(argv[1],U->nick))
+        return;/* changed nick */
+    if(!irccasecmp(argv[1],getMetaValue(&U->metadata, "NICK")))
+        return;/* identified */
     guestNick = getConfigValue("NickServGuestNick");
     if(!guestNick)
         guestNick = defaultGuest;
