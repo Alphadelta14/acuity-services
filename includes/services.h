@@ -9,6 +9,7 @@
 #include "ircd.h"
 #include "network.h"
 #include "config.h"
+#include "db.h"
 #include <stdarg.h>
 #include <time.h>
 

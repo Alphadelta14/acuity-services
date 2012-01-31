@@ -96,6 +96,7 @@ int acuity_start(){
 
     dlclose(handle); */
     loadConfig();
+    open_database();
     loadModule("network");
     loadModule("inspircd20");
     loadModule("nickserv");
@@ -107,6 +108,7 @@ int acuity_start(){
     /* Now, our uptime may start! */
     starttime = time(NULL);
     eventloopIRC();
+    close_database();
     return 0;
 }
 
