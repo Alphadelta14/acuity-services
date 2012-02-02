@@ -77,4 +77,26 @@ NickServMinPasslen "6"
 # service just for vanity.
 NickServMaxGroupedNicks "10"
 
+# NickServGuestNick: optional (default: Guest)
+# When users don't identify in time for their protected nick, their
+# nick will be changed to this value plus a random number between 1001
+# and 8191
+#NickServGuestNick "Fail"
+
+# NickServMaxKillTime: optional (default: 253)
+# The maximum time a user may specify in /ns set kill for services to
+# wait for identification before changing the user's nick.
+#NickServMaxKillTime "253"
+
+# NickServDefaultProtection: (default: 20)
+# Specifies the default time for services to wait before changing an
+# unidentified user's nick. You probably won't want to set this very
+# low. Special cases:
+# -1: Immediate
+# -2: Turn off protection and just send a warning notice
+# 0 and any other negative numbers other than the other two listed
+# above will result in sort of immediate action -- you shouldn't use
+# them if you like your Acuity to work consistently and correctly.
+NickServDefaultProtection "60"
+
 # EOF
