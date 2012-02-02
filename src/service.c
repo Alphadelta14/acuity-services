@@ -55,10 +55,10 @@ void addHelp(helpnode **list, char *command, char *shorthelp, void (*longhelp)(c
             }
             node = node->next;
         }
-        safemalloc(node->next, helpnode, );
+        safemallocvoid(node->next, helpnode);
         node = node->next;
     }else{
-        safemalloc(*list, helpnode, );
+        safemallocvoid(*list, helpnode);
         node = *list;
     }
     node->command = command;
@@ -112,10 +112,10 @@ void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp
             }
             node = node->next;
         }
-        safemalloc(node->next, setnode, );
+        safemallocvoid(node->next, setnode);
         node = node->next;
     }else{
-        safemalloc(*list, setnode, );
+        safemallocvoid(*list, setnode);
         node = *list;
     }
     node->option = option;
