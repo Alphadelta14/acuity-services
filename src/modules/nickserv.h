@@ -28,6 +28,7 @@ struct _nickgroup {
 };
 
 struct _nickaccount {
+    unsigned int nickid;
     char *nick;
     nickgroup *group;
     time_t regtime;

@@ -543,6 +543,19 @@ void testCmd(char *uid, char *msg){
 }
 
 void INIT_MOD(){
+    db_query("CREATE TABLE IF NOT EXISTS `nickaccount` ("
+    "`nickid` int unsigned NOT NULL UNIQUE PRIMARY KEY,"
+    "`nick` text (255) NOT NULL,"
+    "`groupid` int unsigned NOT NULL,"
+    "`regtime` int unsigned NOT NULL);", NULL, NULL);
+    db_query("CREATE TABLE IF NOT EXISTS `nickgroup` ("
+    "`groupid` int unsigned NOT NULL PRIMARY KEY,"
+    "`mainnick` int NOT NULL,"
+    "`email` text (255) NOT NULL,"
+    "`passwd` blob (32),"
+    "`passmethod` blob (4),"
+    "`regtime` int unsigned NOT NULL);", NULL, NULL);
+    /* SELECT * FROM nickgroup LEFT JOIN nickaccount ON nickaccount.groupid = nickgroup.groupid ORDER BY nickgroup.groupid*/
     hook_event(EVENT_LINK, createNickServ);
     hook_event(EVENT_MESSAGE, fireNickServCommand);
     registerNickServCommand("help",ns_help);
