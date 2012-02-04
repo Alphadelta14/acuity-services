@@ -32,3 +32,6 @@ mod:
 	mkdir -p build/modules
 	mkdir -p modules
 	@$(foreach var, $(wildcard src/modules/*.c), $(cmd))
+
+clean:
+	rm -rf build
