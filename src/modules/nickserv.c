@@ -558,7 +558,11 @@ void testCmd(char *uid, char *msg){
     aclog(LOG_DEBUG,"Test message sent: %s\n",msg);
 }
 
-void INIT_MOD(){
+static void setupTables(){
+    /*void *result;
+    int gid = 0;
+    nickaccount *acc;
+    nickgroup *group;*/
     db_query("CREATE TABLE IF NOT EXISTS `nickaccount` ("
     "`nickid` int unsigned NOT NULL UNIQUE PRIMARY KEY,"
     "`nick` text (255) NOT NULL,"
@@ -569,9 +573,16 @@ void INIT_MOD(){
     "`mainnick` int NOT NULL,"
     "`email` text (255) NOT NULL,"
     "`passwd` blob (32),"
-    "`passmethod` blob (4),"
-    "`regtime` int unsigned NOT NULL);", NULL, NULL);
-    /* SELECT * FROM nickgroup LEFT JOIN nickaccount ON nickaccount.groupid = nickgroup.groupid ORDER BY nickgroup.groupid*/
+    "`passmethod` blob (4));", NULL, NULL);
+    /*db_query("SELECT `nickid`, `nick`, `regtime`, `groupid`, `mainnick`, `email`, `passwd`, `passmethod` FROM `nickgroup` LEFT JOIN `nickaccount` ON  `nickaccount`.`groupid` = `nickgroup`.`groupid` ORDER BY `nickgroup`.`groupid`", &result, NULL);
+    while(db_fetch_row(result, "isiiisbb", &nickid, &nick, &groupid, &mainnick, &email, &passwd, &passmethod)==3){
+        printf("a: %d, b: %d, s: %s\n", a, b, s);
+    }
+    cNickGroupID = gid+1;*/
+}
+
+void INIT_MOD(){
+    setupTables();
     hook_event(EVENT_LINK, createNickServ);
     hook_event(EVENT_MESSAGE, fireNickServCommand);
     registerNickServCommand("help",ns_help);
