@@ -114,6 +114,42 @@ unsigned int generateNickGroupID(void){
     return cNickGroupID++;
 }
 
+void addNickElement(nicklist **list, nickaccount *acc){
+    nicklist *nicks, *nextnode, *prevnode;
+    char *nick;
+    nicks = *list;
+    nick = acc->nick;
+    if(!nicks){
+        safemallocvoid(nicks, nicklist);
+        nicks->acc = acc;
+        nicks->next = NULL;
+        *list = nicks;
+    }else if(irccasecmp(nicks->acc->nick, nick)>0){
+        nextnode = nicks;
+        safemallocvoid(nicks, nicklist);
+        nicks->acc = acc;
+        nicks->next = nextnode;
+        *list = nicks;
+    }else{
+        prevnode = nicks;
+        nextnode = prevnode->next;
+        while(nextnode){
+            if(irccasecmp(nextnode->acc->nick, nick)>0){
+                safemallocvoid(prevnode->next, nicklist);
+                prevnode->next->acc = acc;
+                prevnode->next->next = nextnode;
+                return;
+            }
+            prevnode = nextnode;
+            nextnode = prevnode->next;
+        }
+        safemallocvoid(prevnode->next, nicklist);
+        prevnode->next->acc = acc;
+        prevnode->next->next = NULL;
+        return;
+    }
+}
+
 nickaccount *getNickAccountByNick(char *nick){
     nicklist *nicks;
     nicks = registerednicks;
@@ -203,24 +239,13 @@ void deleteNickGroup(nickgroup *group){
 
 nickaccount *createNickAccount(char *nick){
     nickaccount *acc;
-    nicklist *nicks;
     safemalloc(acc,nickaccount,NULL);
     safenmalloc(acc->nick,char,sizeof(nick)+1,NULL);
     strcpy(acc->nick,nick);
     acc->regtime = time(NULL);
     acc->metadata = NULL;
     acc->group = NULL;
-    nicks = registerednicks;
-    if(!nicks){
-        safemalloc(registerednicks,nicklist,NULL);
-        registerednicks->acc = acc;
-        registerednicks->next = NULL;
-    } else {
-        while(nicks->next) nicks = nicks->next;
-        safemalloc(nicks->next,nicklist,NULL);
-        nicks->next->acc = acc;
-        nicks->next->next = NULL;
-    }
+    addNickElement(&registerednicks, acc);
     return acc;
 }
 
@@ -248,26 +273,17 @@ void deleteNickAccount(nickaccount *acc){
 }
 
 void addNickToGroup(nickaccount *acc, nickgroup *group){
-    nicklist *members;
     if((!acc)||(!group))
         return;
     removeNickFromGroup(acc, acc->group);
     acc->group = group;
-    members = group->nicks;
-    if(!members){
-        safemallocvoid(group->nicks,nicklist);
-        group->nicks->acc = acc;
-        group->nicks->next = NULL;
-    } else {
-        while(members->next) members = members->next;
-        safemallocvoid(members->next,nicklist);
-        members->next->acc = acc;
-        members->next->next = NULL;
-    }
+    addNickElement(&group->nicks, acc);
 }
 
 void removeNickFromGroup(nickaccount *acc, nickgroup *group){
     nicklist *nicks, *prev;
+    if(!group)
+        return;
     prev = nicks = group->nicks;
     if(nicks->acc == acc){
         group->nicks = nicks->next;
