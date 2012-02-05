@@ -20,6 +20,7 @@ Potential Configuration Values:
 user *nickserv = NULL;
 commandnode *nickservcmds = NULL;
 unsigned int cNickGroupID = 1;/* current group id */
+unsigned int cNickID = 1;
 nicklist *registerednicks = NULL;
 nickgrouplist *registerednickgroups = NULL;
 helpnode *nickservHelp = NULL;
@@ -242,6 +243,7 @@ nickaccount *createNickAccount(char *nick){
     safemalloc(acc,nickaccount,NULL);
     safenmalloc(acc->nick,char,sizeof(nick)+1,NULL);
     strcpy(acc->nick,nick);
+    acc->nickid = cNickID++;
     acc->regtime = time(NULL);
     acc->metadata = NULL;
     acc->group = NULL;
@@ -559,10 +561,12 @@ void testCmd(char *uid, char *msg){
 }
 
 static void setupTables(){
-    /*void *result;
-    int gid = 0;
+    void *result;
+    int nickid, regtime, groupid = 0, oldGroupid = 0, maxnickid = 0, mainnick;
     nickaccount *acc;
-    nickgroup *group;*/
+    nickgroup *group;
+    nickgrouplist *groups;
+    char *nick, *email, *passwd, *passmethod;
     db_query("CREATE TABLE IF NOT EXISTS `nickaccount` ("
     "`nickid` int unsigned NOT NULL UNIQUE PRIMARY KEY,"
     "`nick` text (255) NOT NULL,"
@@ -574,11 +578,68 @@ static void setupTables(){
     "`email` text (255) NOT NULL,"
     "`passwd` blob (32),"
     "`passmethod` blob (4));", NULL, NULL);
-    /*db_query("SELECT `nickid`, `nick`, `regtime`, `groupid`, `mainnick`, `email`, `passwd`, `passmethod` FROM `nickgroup` LEFT JOIN `nickaccount` ON  `nickaccount`.`groupid` = `nickgroup`.`groupid` ORDER BY `nickgroup`.`groupid`", &result, NULL);
-    while(db_fetch_row(result, "isiiisbb", &nickid, &nick, &groupid, &mainnick, &email, &passwd, &passmethod)==3){
-        printf("a: %d, b: %d, s: %s\n", a, b, s);
+    db_query("SELECT `nickid`, `nick`, `regtime`, `nickgroup`.`groupid` AS `groupid`, `mainnick`, `email`, `passwd`, `passmethod` FROM `nickgroup` LEFT JOIN `nickaccount` ON  `nickaccount`.`groupid` = `nickgroup`.`groupid` ORDER BY `nickgroup`.`groupid`;", &result, NULL);
+    while(db_fetch_row(result, "isiiisbb", &nickid, &nick, &regtime, &groupid, &mainnick, &email, &passwd, &passmethod)==8){
+        if(groupid!=oldGroupid){
+            safemallocvoid(group, nickgroup);
+            group->groupid = groupid;
+            safenmallocvoid(group->email, char, strlen(email)+1);
+            strcpy(group->email, email);
+            safemallocvoid(group->nicks, nicklist);
+            group->nicks = NULL;/* add later */
+            group->metadata = NULL;
+            group->main = NULL;/* set later */
+            memcpy(group->passmethod, passmethod, 4);
+            memcpy(group->passwd, passwd, 32);
+            oldGroupid = groupid;
+            groups = registerednickgroups;
+            if(!groups){
+                safemallocvoid(registerednickgroups, nickgrouplist);
+                registerednickgroups->group = group;
+                registerednickgroups->next = NULL;
+            } else {
+                while(groups->next) groups = groups->next;
+                safemallocvoid(groups->next, nickgrouplist);
+                groups->next->group = group;
+                groups->next->next = NULL;
+            }
+        }
+        acc = createNickAccount(nick);
+        acc->nickid = nickid;
+        acc->regtime = (time_t)regtime;
+        if(nickid>maxnickid)
+            maxnickid = nickid;
+        if(nickid==mainnick)
+            group->main = acc;
+        addNickElement(&group->nicks, acc);
     }
-    cNickGroupID = gid+1;*/
+    cNickGroupID = groupid+1;
+    cNickID = maxnickid+1;
+}
+
+void ns_save(char *uid, char *msg){
+    nickaccount *acc;
+    nickgroup *group;
+    nicklist *nicks;
+    nickgrouplist *groups;
+    blobdata passwd, passmethod;
+    nicks = registerednicks;
+    groups = registerednickgroups;
+    passwd.size = 32;
+    passmethod.size = 4;
+    while(nicks){
+        acc = nicks->acc;
+        db_query("INSERT INTO `nickaccount` (`nickid`, `nick`, `groupid`, `regtime`) VALUES(?, ?, ?, ?);", NULL, "isii", acc->nickid, acc->nick, acc->group->groupid, acc->regtime);
+        nicks = nicks->next;
+    }
+    while(groups){
+        group = groups->group;
+        passwd.data = group->passwd;
+        passmethod.data = group->passmethod;
+        db_query("INSERT INTO `nickgroup` (`groupid`, `mainnick`, `email`, `passwd`, `passmethod`) VALUES(?, ?, ?, ?, ?);", NULL, "iisbb", group->groupid, group->main->nickid, group->email, passwd, passmethod);
+        groups = groups->next;
+    }
+    aclog(LOG_DEBUG,"NickServ Database saved\n");
 }
 
 void INIT_MOD(){
@@ -595,6 +656,7 @@ void INIT_MOD(){
     addNickServHelp("IDENTIFY", "Identifies your nick",ns_identifyhelp);
     registerNickServCommand("set",ns_set);
     addNickServHelp("SET", "Sets options for your nick",ns_sethelp);
+    registerNickServCommand("save",ns_save);
     loadModule("ns_set_basic");
     loadModule("ns_info");
     loadModule("ns_set_time");

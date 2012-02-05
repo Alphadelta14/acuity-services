@@ -30,6 +30,7 @@ int db_query(const char *query, void **result, char *fmt, ...){
     int status, param, fparam = 0;
     const char *tail = NULL;
     char type;
+    blobdata blob;
     va_list args;
     sqlite3_stmt *statement;
     va_start(args, fmt);
@@ -47,6 +48,11 @@ int db_query(const char *query, void **result, char *fmt, ...){
                     break;
                 case 's':
                     status = sqlite3_bind_text(statement, param, va_arg(args, char*), -1, SQLITE_STATIC);
+                    if(status!=SQLITE_OK) return status;
+                    break;
+                case 'b':
+                    blob = va_arg(args, blobdata);
+                    status = sqlite3_bind_blob(statement, param, blob.data, blob.size, SQLITE_STATIC);
                     if(status!=SQLITE_OK) return status;
                     break;
                 default:
@@ -99,6 +105,9 @@ int db_fetch_row(void *result, char *fmt, ...){
                     strncpy(*returnS, columnS, len);*/
                     *(va_arg(args, char**)) = (char*)sqlite3_column_text(statement, param);
                     break;
+                case 'b':
+                    *(va_arg(args, void**)) = (void*)sqlite3_column_blob(statement, param);
+                    break;
                 default:
 
                     break;
@@ -112,4 +121,8 @@ int db_fetch_row(void *result, char *fmt, ...){
         return -1;/* maybe return EOF constant? */
     }
     return conversions;
+}
+
+char *db_error(){
+    return (char *)sqlite3_errmsg(db_conn);
 }
