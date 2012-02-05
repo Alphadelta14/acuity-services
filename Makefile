@@ -35,3 +35,5 @@ mod:
 
 clean:
 	rm -rf build
+	rm -rf modules
+	rm -f acuity
