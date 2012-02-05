@@ -175,6 +175,19 @@ nickgroup *getNickGroupByEmail(char *email){
     return NULL;
 }
 
+void createSavedNickGroup(nickgroup *group){
+    blobdata passwd, passmethod;
+    passwd.size = 4;
+    passmethod.size = 32;
+    passwd.data = group->passwd;
+    passmethod.data = group->passmethod;
+    db_query("INSERT INTO `nickgroup` (`groupid`, `mainnick`, `email`, `passwd`, `passmethod`) VALUES(?, ?, ?, ?, ?);", NULL, "iisbb", group->groupid, group->main->nickid, group->email, passwd, passmethod);
+}
+
+void createSavedNickAccount(nickaccount *acc){
+    db_query("INSERT INTO `nickaccount` (`nickid`, `nick`, `groupid`, `regtime`) VALUES(?, ?, ?, ?);", NULL, "isii", acc->nickid, acc->nick, acc->group->groupid, acc->regtime);
+}
+
 nickgroup *createNickGroup(nickaccount *acc, char *pass, char *email){
     nickgrouplist *groups;
     nickgroup *group;
@@ -338,6 +351,7 @@ void ns_register(char *uid, char *msg){
     user *U;
     char *pass, *email, *spaces, *tmpconf, *modes;
     nickaccount *acc;
+    nickgroup *group;
     U = getUser(uid);
     if(!U)
         return;
@@ -373,7 +387,9 @@ void ns_register(char *uid, char *msg){
         aclog(LOG_ERROR,"Failed to create account for %s (%s).\n", U->nick, uid);
         return;
     }
-    createNickGroup(acc, pass, email);
+    group = createNickGroup(acc, pass, email);
+    createSavedNickGroup(group);
+    createSavedNickAccount(acc);
     modes = buildModes(1, MODE_NSREGISTER);
     setMode(nickserv->uid, uid, modes);
     free(modes);
@@ -589,8 +605,10 @@ static void setupTables(){
             group->nicks = NULL;/* add later */
             group->metadata = NULL;
             group->main = NULL;/* set later */
+            //aclog(LOG_DEBUG, "Pass: [%p, %p] Data: %s, %s\n", group->passmethod, group->passwd, passmethod, passwd);
             memcpy(group->passmethod, passmethod, 4);
             memcpy(group->passwd, passwd, 32);
+            //aclog(LOG_DEBUG, "Pass: [%p, %p] Data: %s, %s\n", group->passmethod, group->passwd, group->passmethod, group->passwd);
             oldGroupid = groupid;
             groups = registerednickgroups;
             if(!groups){
@@ -611,34 +629,27 @@ static void setupTables(){
             maxnickid = nickid;
         if(nickid==mainnick)
             group->main = acc;
-        addNickElement(&group->nicks, acc);
+        addNickToGroup(acc, group);
     }
     cNickGroupID = groupid+1;
     cNickID = maxnickid+1;
 }
 
 void ns_save(char *uid, char *msg){
-    nickaccount *acc;
     nickgroup *group;
-    nicklist *nicks;
     nickgrouplist *groups;
     blobdata passwd, passmethod;
-    nicks = registerednicks;
     groups = registerednickgroups;
     passwd.size = 32;
     passmethod.size = 4;
-    while(nicks){
-        acc = nicks->acc;
-        db_query("INSERT INTO `nickaccount` (`nickid`, `nick`, `groupid`, `regtime`) VALUES(?, ?, ?, ?);", NULL, "isii", acc->nickid, acc->nick, acc->group->groupid, acc->regtime);
-        nicks = nicks->next;
-    }
     while(groups){
         group = groups->group;
         passwd.data = group->passwd;
         passmethod.data = group->passmethod;
-        db_query("INSERT INTO `nickgroup` (`groupid`, `mainnick`, `email`, `passwd`, `passmethod`) VALUES(?, ?, ?, ?, ?);", NULL, "iisbb", group->groupid, group->main->nickid, group->email, passwd, passmethod);
+        db_query("UPDATE `nickgroup` SET `passmethod` = ?, `passwd` = ?, `email` = ?, `mainnick` = ? WHERE `groupid` = ?; (`groupid`, `mainnick`, `email`, `passwd`, `passmethod`) VALUES(?, ?, ?, ?, ?);", NULL, "bbsii", passmethod, passwd, group->email, group->main->nickid, group->groupid);
         groups = groups->next;
     }
+    /* TODO: Save metadata */
     aclog(LOG_DEBUG,"NickServ Database saved\n");
 }
 
