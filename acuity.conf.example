@@ -50,6 +50,9 @@ HubPass "n30-hydr4"
 # if you don't know what you're doing.
 #ServicesModes "+Ik"
 
+#######################################################################
+# NickServ configuration
+#######################################################################
 # NickServNick: optional (default: NickServ)
 # The nick for the NickServ client. You shouldn't change this.
 #NickServNick "NickServ"
@@ -98,5 +101,24 @@ NickServMaxGroupedNicks "10"
 # above will result in sort of immediate action -- you shouldn't use
 # them if you like your Acuity to work consistently and correctly.
 NickServDefaultProtection "60"
+
+#######################################################################
+# OperServ configuration
+#######################################################################
+# OperServOper: optional (default: OperServ)
+# The nick for the OperServ client. You shouldn't change this.
+#OperServOper "OperServ"
+
+# OperServIdent: optional (default: OperServ)
+# The ident for the OperServ client.
+#OperServIdent "BlackBox"
+
+# OperServHost: optional (default: operator.black.box)
+# The host for the OperServ client.
+#OperServHost "services.neo-hydra.invalid"
+
+# OperServGECOS: optional (default: Operator Services)
+# The GECOS (aka ircname/realname) for the OperServ client.
+#OperServGECOS "neo-hydra network Oper Service"
 
 # EOF
