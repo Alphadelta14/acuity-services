@@ -1,5 +1,6 @@
 #include <services.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "operserv.h"
 
 user *operserv = NULL;
@@ -33,6 +34,22 @@ void fireOperServCommand(line *l){
     fireServiceCommand(&operservcmds, operserv, l);
 }
 
+void os_quit(char *uid, char *msg){
+    usernode *service;
+    char buff[128], defaultOperServQuit[] = "Services are shutting down.", *quit;
+    aclog(LOG_ERROR|LOGFLAG_SRC, operserv, "Services are shutting down without saving databases... now!\n");
+    if(!(quit = getConfigValue("OperServQuit")))
+        quit = defaultOperServQuit;
+    service = serviceusers;
+    while(service){
+        sprintf(buff, ":%s QUIT :%s.\r\n", service->U->uid, quit);
+        send_raw_line(buff);
+        service = service->next;
+    }
+    /* TODO: SQUIT() here */
+    exit(0);
+}
+
 void os_test(char *uid, char *msg){
     /* because we're operserv */
     char buff[128];
@@ -44,4 +61,5 @@ void INIT_MOD(){
     hook_event(EVENT_LINK, createOperServ);
     hook_event(EVENT_MESSAGE, fireOperServCommand);
     registerOperServCommand("test", os_test);
+    registerOperServCommand("quit", os_quit);
 }

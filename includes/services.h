@@ -44,6 +44,7 @@ typedef struct _setnode {
 } setnode;
 
 extern char defaultTZ;
+extern usernode *serviceusers;
 
 user *createService(char *nick, char *host, char *ident, char *gecos);
 void service_message(user *U, char *uid, char *str, ...);

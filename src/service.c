@@ -8,16 +8,33 @@
 /* reserved variables for time functions */
 char timeZoneStr[40];/*"{$ASCTIME(26)} UTC+12:00"; it will be overwritten, with every timezone get call */
 char defaultTZ = '\x30';
+usernode *serviceusers = NULL;
 
 user *createService(char *nick, char *host, char *ident, char *gecos){
     char *uid;
     user *U;
+    usernode *node, *prev;
     if(!isValidNick(nick)){
         aclog(LOG_ERROR, "Couldn't create service with the invalid nick: %s\n",nick);
         return NULL;
     }
     uid = generateUID();
     U = createUser(uid, nick, ident, host, "0.0.0.0", host, gecos, getConfigValue("ServicesModes"));
+    if(!serviceusers){
+        safemalloc(serviceusers, usernode, NULL);
+        serviceusers->U = U;
+        serviceusers->next = NULL;
+    }else{
+        prev = node = serviceusers;
+        while(node){
+            prev = node;
+            node = node->next;
+        }
+        safemalloc(node, usernode, NULL);
+        node->U = U;
+        node->next = NULL;
+        prev->next = node;
+    }
     return U;
 }
 
