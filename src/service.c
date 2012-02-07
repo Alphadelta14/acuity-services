@@ -210,8 +210,8 @@ void fireServiceCommand(commandnode **cmds, user *service, line *l){
         }
         node = node->next;
     }
-    badCmd = strtok(index, " ");
-    service_message(service, l->id, "Unknown command \"%s\"", l->text);
+    badCmd = strtok(l->text, " ");
+    service_message(service, l->id, "Unknown command \"%s\"", badCmd);
 }
 
 char *getTimeString(char *tz, time_t from){

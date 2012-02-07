@@ -100,6 +100,7 @@ int acuity_start(){
     loadModule("network");
     loadModule("inspircd20");
     loadModule("nickserv");
+    loadModule("operserv");
     //loadModule("ns_test");
     aclog(5,"Connecting\n");
     if(!connectIRC(getConfigValue("HubHost"),getConfigValue("HubPort"))){
