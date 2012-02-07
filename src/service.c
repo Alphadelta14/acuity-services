@@ -174,6 +174,46 @@ void fireSetHelp(user *U, setnode *list, char *uid, char *msg){
     }
 }
 
+void addServiceCommand(commandnode **cmds, char *cmd, void (*callback)(char *uid, char *msg)){
+    commandnode *node, *prev;
+    safemallocvoid(node, commandnode);
+    safenmallocvoid(node->cmd, char, sizeof(char)*(strlen(cmd)+1));
+    strcpy(node->cmd, cmd);
+    node->callback = callback;
+    node->next = NULL;
+    prev = *cmds;
+    if(!prev){
+        *cmds = node;
+    } else {
+        while(prev->next) prev = prev->next;
+        prev->next = node;
+    }
+}
+
+void fireServiceCommand(commandnode **cmds, user *service, line *l){
+    int cmdlen;
+    char *index, *badCmd;
+    commandnode *node;
+    if(strcmp(l->params[0], service->uid))
+        return;/* not us */
+    index = strstr(l->text," ");
+    if(index){
+        cmdlen = (int)(index-(l->text));
+    } else {
+        cmdlen = strlen(l->text);
+    }
+    node = *cmds;
+    while(node){
+        if(!strncasecmp(node->cmd, l->text, cmdlen)){
+            node->callback(l->id, l->text);
+            return;
+        }
+        node = node->next;
+    }
+    badCmd = strtok(index, " ");
+    service_message(service, l->id, "Unknown command \"%s\"", l->text);
+}
+
 char *getTimeString(char *tz, time_t from){
     char tzChar, sign;
     int hour, minute;

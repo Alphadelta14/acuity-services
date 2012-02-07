@@ -53,6 +53,8 @@ void addSetOption(setnode **list, char *option, char *shorthelp, void (*longhelp
 void fireHelp(user *U, helpnode *list, char *uid, char *msg);
 void fireSetOption(user *U, setnode *list, char *uid, char *target, char *msg);
 void fireSetHelp(user *U, setnode *list, char *uid, char *msg);
+void addServiceCommand(commandnode **cmds, char *cmd, void (*callback)(char *uid, char *msg));
+void fireServiceCommand(commandnode **cmds, user *service, line *l);
 char *getTimeString(char *tz, time_t from);
 
 /*typedef struct _serverconn {

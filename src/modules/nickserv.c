@@ -48,41 +48,11 @@ void createNickServ(line *L){
 }
 
 void registerNickServCommand(char *cmd, void (*callback)(char *uid, char *msg)){
-    commandnode *node, *prev;
-    safemallocvoid(node,commandnode);
-    safenmallocvoid(node->cmd,char,sizeof(char)*(strlen(cmd)+1));
-    strcpy(node->cmd,cmd);
-    node->callback = callback;
-    node->next = NULL;
-    prev = nickservcmds;
-    if(!nickservcmds){
-        nickservcmds = node;
-    } else {
-        while(prev->next) prev = prev->next;
-        prev->next = node;
-    }
+    addServiceCommand(&nickservcmds, cmd, callback);
 }
 
 void fireNickServCommand(line *l){
-    int cmdlen;
-    char *index;
-    commandnode *node;
-    if(strcmp(l->params[0],nickserv->uid))
-        return;/* not us */
-    index = strstr(l->text," ");
-    if(index){
-        cmdlen = (int)(index - l->text);
-    } else {
-        cmdlen = strlen(l->text);
-    }
-    node = nickservcmds;
-    while(node){
-        if(!strncasecmp(node->cmd,l->text,cmdlen)){
-            node->callback(l->id,l->text);
-            return;
-        }
-        node = node->next;
-    }
+    fireServiceCommand(&nickservcmds, nickserv, l);
 }
 
 
