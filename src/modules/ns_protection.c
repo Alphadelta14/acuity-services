@@ -7,14 +7,18 @@
 
 int guestSeed = 0;
 int guestRnd(){/* generate a 4 digit number, max 8191 */
+    int seed = 6;
     guestSeed += 0x527;
+    guestSeed ^= (int)(&seed)[-1];/* lol, randomness of memory (run time stack) contents;
+    note: this is most likely a chunk of an address of a config value pointer.
+    (Lot's of internal work will show that). Either way, random enough! */
     guestSeed &= 0x1FFF;
     return guestSeed;
 }
 
 
 void ns_protection_enforce(int argc, char **argv){
-    char *guestNick, defaultGuest[] = "Guest", buff[512], *newNick;
+    char *guestNick, guestFullNick[32], defaultGuest[] = "Guest", buff[512], *newNick;
     user *U;
     if(argc<2)
         return;
@@ -28,7 +32,11 @@ void ns_protection_enforce(int argc, char **argv){
     guestNick = getConfigValue("NickServGuestNick");
     if(!guestNick)
         guestNick = defaultGuest;
-    sprintf(buff, ":%s SVSNICK %s %s%d %d\r\n", getConfigValue("ServerId"), argv[0], guestNick, guestRnd(), (int)time(NULL));
+    sprintf(guestFullNick, "%s%d", guestNick, guestRnd());
+    while(!getUserByNick(guestFullNick)){
+        sprintf(guestFullNick, "%s%d", guestNick, guestRnd());
+    }
+    sprintf(buff, ":%s SVSNICK %s %s %d\r\n", getConfigValue("ServerId"), argv[0], guestFullNick, (int)time(NULL));
     send_raw_line(buff);
 }
 

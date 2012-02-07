@@ -605,10 +605,8 @@ static void setupTables(){
             group->nicks = NULL;/* add later */
             group->metadata = NULL;
             group->main = NULL;/* set later */
-            //aclog(LOG_DEBUG, "Pass: [%p, %p] Data: %s, %s\n", group->passmethod, group->passwd, passmethod, passwd);
             memcpy(group->passmethod, passmethod, 4);
             memcpy(group->passwd, passwd, 32);
-            //aclog(LOG_DEBUG, "Pass: [%p, %p] Data: %s, %s\n", group->passmethod, group->passwd, group->passmethod, group->passwd);
             oldGroupid = groupid;
             groups = registerednickgroups;
             if(!groups){

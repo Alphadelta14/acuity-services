@@ -26,5 +26,6 @@ void (*delChannelUser)(chan *C, user *U);
 int (*chanStatusAppend)(char *channame, char *status);
 void changeMode(int *modeM, char *modes);
 void changeNick(user *U, char *nick);
+user *getUserByNick(char *nick);
 
 #endif /* NETWORK_H */

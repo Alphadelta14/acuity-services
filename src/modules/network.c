@@ -222,6 +222,23 @@ user *_getUser(char *uid){
     return NULL;
 }
 
+user *getUserByNick(char *nick){
+    user *U;
+    usernode *node;
+    
+    if(!userlist)
+        return NULL;
+    node = userlist;
+    while(node){
+        U = node->U;
+        if(!irccasecmp(nick, U->nick)){
+            return U;
+        }
+        node = node->next;
+    }
+    return NULL;
+}
+
 chan *_addChannel(char *name, char **pmodes){
     chan *C;
     channode *node, *next;
