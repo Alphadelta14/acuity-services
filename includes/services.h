@@ -4,6 +4,7 @@
 #include "actypes.h"
 #include "acuity.h"
 #include "module.h"
+#include "permissions.h"
 #include "entity.h"
 #include "events.h"
 #include "ircd.h"
