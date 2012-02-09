@@ -25,7 +25,14 @@ void send_raw_insp(const char *buff){
 
 char cuid[] = "000AAAAA@";
 /* first generated is XXXAAAAAA */
+char *localId = NULL;
 
+char *getLocalId(){
+    if(localId)
+        return localId;
+    else
+        return "";
+}
 /*
 :644AAAAAA PRIVMSG #lobby :hi
 */
@@ -662,6 +669,16 @@ void setMode(char *senderid, char *target, char *modes){
     aclog(LOG_DEBUG,"%s set modes %s on %s.\n", senderid, modes, target);
 }
 
+void closeIRC(char *reason){
+    char buff[512];
+    snprintf(buff, 512, ":%s SNONOTICE L :%s\r\n", getLocalId(), reason);
+    send_raw_line(buff);
+    snprintf(buff, 512, ":%s SQUIT %s :%s\r\n", getLocalId(), getConfigValue("ServerName"), reason);
+    send_raw_line(buff);
+    shutdown(irc_socket, 2);
+    close(irc_socket);
+}
+
 void lolping(int argc, char **argv){
     printf("%d lol: %s\n",(int)time(NULL),argv[0]);
 }
@@ -692,6 +709,7 @@ void INIT_MOD(){
     generateUID = &generateUIDInsp;
     createUser = &createUserInsp;   
     isValidNick = &isValidNickInsp;
+    localId = getConfigValue("ServerId");
     /*addTimerEvent(printchanmap, time(NULL)+5, 0);
     addTimerEvent(printchanmap, time(NULL)+45, 0);
     addTimerEvent(lolping, time(NULL)+30, 1, "something");

@@ -46,7 +46,7 @@ void os_quit(char *uid, char *msg){
         send_raw_line(buff);
         service = service->next;
     }
-    /* TODO: SQUIT() here */
+    closeIRC(quit);
     exit(0);
 }
 
