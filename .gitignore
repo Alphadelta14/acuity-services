@@ -4,3 +4,4 @@ build/*
 modules/*
 acuity.conf
 acuity.pid
+acuity.db
