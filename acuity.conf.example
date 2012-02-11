@@ -121,4 +121,9 @@ NickServDefaultProtection "60"
 # The GECOS (aka ircname/realname) for the OperServ client.
 #OperServGECOS "neo-hydra network Oper Service"
 
+# OperServQuit: optional (default: Services are shutting down.)
+# This defines the quit message all services clients will appear to quit
+# with when /os quit is called.
+#OperServQuit "Something messed up so badly we need to shut services down."
+
 # EOF
