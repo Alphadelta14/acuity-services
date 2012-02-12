@@ -35,6 +35,12 @@ void fireOperServCommand(line *l){
     fireServiceCommand(&operservcmds, operserv, l);
 }
 
+void ns_message(char *uid, char *str, ...){
+    va_list args;
+    va_start(args, str);
+    vservice_message(operserv, uid, str, args);
+}
+
 void os_quit(char *uid, char *msg){
     usernode *service;
     char buff[128], defaultOperServQuit[] = "Services are shutting down.", *quit;
@@ -60,7 +66,7 @@ void os_perm(char *uid, char *msg){
     strtok_r(msg, " ", &spaces);/* PERM */
     cmd = strtok_r(NULL, " ", &spaces);
     if(!cmd){
-        /*TODO: os_message(uid, "Syntax: PERM {SET|LIST|ADDCLASS} \x02class\x02 \x02permission\x02 \x02value\x02");*/
+        os_message(uid, "Syntax: PERM {SET|LIST|ADDCLASS} class permission value");
         return;
     }
     if(strcasecmp(cmd, "SET")){
