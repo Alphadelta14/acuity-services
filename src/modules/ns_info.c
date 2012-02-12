@@ -23,6 +23,14 @@ void ns_info(char *uid, char *msg){
     /* TODO: hooks */
 }
 
+void ns_infohelp(char *uid, char *msg){
+    ns_message(uid,
+        "Syntax: INFO nick\n"
+        " \n"
+        "The INFO command allows you to see whether a nick is registered, its\n"
+        "e-mail address and to what group it belongs.");
+}
+
 void ns_ginfo(char *uid, char *msg){
     char *target, *spaces;
     nickaccount *acc;
@@ -49,17 +57,17 @@ void ns_ginfo(char *uid, char *msg){
     }
 }
 
-void ns_infohelp(char *uid, char *msg){
+void ns_ginfohelp(char *uid, char *msg){
     ns_message(uid,
-        "Syntax: INFO nick\n"
+        "Syntax: GINFO group\n"
         " \n"
-        "The INFO command allows you to see whether a nick is registered, its\n"
-        "e-mail address and to what group it belongs.");
+        "The GINFO command allows you to see detailed information about a\n"
+        "nick group, such as its registered nicks and e-mail address.");
 }
 
 void INIT_MOD(){
     registerNickServCommand("info",ns_info);
     addNickServHelp("INFO", "Displays information about a nick", ns_infohelp);
     registerNickServCommand("ginfo",ns_ginfo);
-    addNickServHelp("GINFO", "Displays information about a group", NULL);
+    addNickServHelp("GINFO", "Displays information about a group", ns_ginfohelp);
 }

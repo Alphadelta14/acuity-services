@@ -31,7 +31,13 @@ void ns_set_email(char *uid, char *target, char *msg){
 }
 
 void ns_sethelp_email(char *uid, char *msg){
-    ns_message(uid, "Syntax: SET EMAIL \x02\x65mail\x02");
+    ns_message(uid,
+            "Syntax: SET EMAIL mail\n"
+            " \n"
+            "Changes your e-mail address to the given one.");
+    /* TODO: When we add e-mail verification, check for that one and tell the
+     *       user that he'll need to re-verify it.
+     */
 }
 
 void ns_set_password(char *uid, char *target, char *msg){
@@ -65,7 +71,10 @@ void ns_set_password(char *uid, char *target, char *msg){
 }
 
 void ns_sethelp_password(char *uid, char *msg){
-    ns_message(uid, "Syntax: SET PASSWORD \x02new password\x02");
+    ns_message(uid,
+            "Syntax: SET PASSWORD new password\n"
+            " \n"
+            "Changes your password to the given one.");
 }
 
 void ns_set_nick(char *uid, char *target, char *msg){
@@ -89,7 +98,12 @@ void ns_set_nick(char *uid, char *target, char *msg){
 }
 
 void ns_sethelp_nick(char *uid, char *msg){
-    ns_message(uid, "Syntax: SET NICK \x02nIcK\x02");
+    ns_message(uid,
+            "Syntax: SET NICK nIcK\n"
+            " \n"
+            "Changes the capitalization of your current nick. For example, if\n"
+            "you registered your nick as NICK, you could use SET NICK to have\n"
+            "it show as nIcK.");
 }
 
 

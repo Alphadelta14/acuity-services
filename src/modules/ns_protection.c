@@ -199,7 +199,32 @@ killVal[0]:
 }
 
 void ns_sethelp_kill(char *uid, char *msg){
-    ns_message(uid, "Syntax: SET KILL \x02seconds\x02");
+    char *tmpconf;
+    ns_message(uid,
+            "Syntax: SET KILL seconds\n"
+            " \n"
+            "Changes the amount of time until someone using your nick(s) will\n"
+            "have their nick forcibly changed if they don't identify.");
+    tmpconf = getConfigValue("NickServMaxKillTime");
+    if(tmpconf){
+        ns_message(uid,
+            "You can set your kill time to a maximum value of %s.", tmpconf);
+    }else{
+        ns_message(uid,
+            "You can set your kill time to a maximum value of 253.");
+    }
+    /* TODO: Stop being a lazy fuck and show the default time, and convert to
+     * meaningful text values in INSTANT
+     */
+    ns_message(uid,
+            "Special values for seconds:\n"
+            "DEFAULT: returns you to the default kill time.\n"
+            "INSTANT: immediately gets rid of anyone using your nick. This\n"
+            "             is a potentially dangerous setting! Do not use it if\n"
+            "             you aren't 100\% sure what you're doing!\n"
+            "OFF:     Turns off nick protection; anyone can then use your\n"
+            "             nick, but they will get a warning that the nick\n"
+            "             belongs to someone else.");
 }
 
 void INIT_MOD(){

@@ -11,6 +11,14 @@ void ns_list(char *uid, char *msg){
         nicks = nicks->next;
     }
 }
+
+void ns_listhelp(char *uid, char *msg){
+    ns_message(uid,
+            "Syntax: LIST\n"
+            " \n"
+            "Lists all registered nicks.");
+}
+
 void ns_listgroups(char *uid, char *msg){
     /* XXX: how can this possibly get alphabetized */
     nickgrouplist *groups;
@@ -22,7 +30,16 @@ void ns_listgroups(char *uid, char *msg){
     }
 }
 
+void ns_listgroupshelp(char *uid, char *msg){
+    ns_message(uid,
+            "Syntax: LISTGROUPS\n"
+            " \n"
+            "Lists all registered nick groups.");
+}
+
 void INIT_MOD(){
     registerNickServCommand("list", ns_list);
+    addNickServHelp("LIST", "List all registered nicknames", ns_listhelp);
     registerNickServCommand("listgroups", ns_listgroups);
+    addNickServHelp("LISTGROUPS", "List all nickname groups", ns_listhelp);
 }

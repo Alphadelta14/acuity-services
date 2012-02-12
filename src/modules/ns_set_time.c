@@ -106,7 +106,21 @@ void ns_set_time(char *uid, char *target, char *msg){
 }
 
 void ns_sethelp_time(char *uid, char *msg){
-    ns_message(uid, "Syntax: SET TIME \x02\x63ommand arguments\x02");
+    ns_message(uid,
+            "Syntax: SET TIME {ZONE|DST} arguments\n"
+            " \n"
+            "The SET TIME command has two subcommands: ZONE and DST.\n"
+            "SET TIME ZONE sets your timezone, in which all times services\n"
+            "prints will be shown. You must specify an offset to UTC. For\n"
+            "example, Americans in EST would need to use:\n"
+            "SET TIME ZONE UTC-09:00\n"
+            "If you wish to return to this network's default timezone, use\n"
+            "SET TIME ZONE DEFAULT\n"
+            " \n"
+            "SET TIME DST takes ON or OFF as options to set if you are in\n"
+            "daylight saving time or not:\n"
+            "SET TIME DST ON sets you as being in DST and changes all\n"
+            "time output by services accordingly.");
 }
 
 void INIT_MOD(){
