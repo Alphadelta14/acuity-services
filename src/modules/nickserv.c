@@ -310,7 +310,9 @@ char hasNickServPermission(char *uid, nickaccount *acc, char *permname){
         if(!source)
             return 0;
         srcperm = getPermission(source->group->class->name, permname);
-        if((srcperm&~PERM_EQUAL)&&((srcperm&PERM_LEVEL)<=(perm&PERM_LEVEL)))
+        if((srcperm&PERM_LEVEL)<(perm&PERM_LEVEL))
+            return 0;
+        else if(((srcperm&PERM_LEVEL)==(perm&PERM_LEVEL))&&(srcperm&~PERM_EQUAL))
             return 0;
         perm = srcperm;
     }
