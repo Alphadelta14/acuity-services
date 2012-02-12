@@ -35,7 +35,7 @@ void fireOperServCommand(line *l){
     fireServiceCommand(&operservcmds, operserv, l);
 }
 
-void ns_message(char *uid, char *str, ...){
+void os_message(char *uid, char *str, ...){
     va_list args;
     va_start(args, str);
     vservice_message(operserv, uid, str, args);
