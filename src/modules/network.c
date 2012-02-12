@@ -90,6 +90,12 @@ char checkModes(int *modeM, int count, ...){
 signed char irccmp(char *str1, char *str2){
     int i, len;
     char c1, c2;
+    if((!str1)&&(str2))
+        return -1;
+    if((str1)&&(!str2))
+        return 1;
+    if((!str1)&&(!str2))
+        return 0;
     len = strlen(str1);
     for(i=0; i<len; i++){
         c1 = str1[i];
@@ -107,6 +113,12 @@ signed char irccmp(char *str1, char *str2){
 signed char irccasecmp(char *str1, char *str2){
     int i, len;
     char c1, c2;
+    if((!str1)&&(str2))
+        return -1;
+    if((str1)&&(!str2))
+        return 1;
+    if((!str1)&&(!str2))
+        return 0;
     len = strlen(str1);
     for(i=0; i<len; i++){
         c1 = str1[i];
