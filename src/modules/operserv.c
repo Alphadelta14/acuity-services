@@ -1,6 +1,7 @@
 #include <services.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "operserv.h"
 
 user *operserv = NULL;
@@ -50,6 +51,30 @@ void os_quit(char *uid, char *msg){
     exit(0);
 }
 
+void os_perm(char *uid, char *msg){
+    char *cmd, *spaces, *class, *permname, *value;
+    user *U;
+    U = getUser(uid);
+    if(!U)
+        return;
+    strtok_r(msg, " ", &spaces);/* PERM */
+    cmd = strtok_r(NULL, " ", &spaces);
+    if(!cmd){
+        /*TODO: os_message(uid, "Syntax: PERM {SET|LIST|ADDCLASS} \x02class\x02 \x02permission\x02 \x02value\x02");*/
+        return;
+    }
+    if(strcasecmp(cmd, "SET")){
+        return;
+    }
+    /* TODO: sanitize */
+    class = strtok_r(NULL, " ", &spaces);
+    permname = strtok_r(NULL, " ", &spaces);
+    value = strtok_r(NULL, " ", &spaces);
+    setPermission(class, permname, atoi(value));
+    /* os_message( */
+    aclog(LOG_OVERRIDE, "%s changed %s's %s to %s\n", U->nick, class, permname, value);
+}
+
 void os_test(char *uid, char *msg){
     /* because we're operserv */
     char buff[128];
@@ -62,4 +87,5 @@ void INIT_MOD(){
     hook_event(EVENT_MESSAGE, fireOperServCommand);
     registerOperServCommand("test", os_test);
     registerOperServCommand("quit", os_quit);
+    registerOperServCommand("perm", os_perm);
 }

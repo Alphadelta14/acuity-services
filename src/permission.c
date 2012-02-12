@@ -5,6 +5,7 @@
 
 permclass defaultperms = {"DEFAULT", NULL, NULL, NULL};
 permclass *permclasslist = &defaultperms;
+permclass *defaultpermclass = &defaultperms;
 
 static permtxlist *createMTX(char *name){
     permtxlist *mtx;

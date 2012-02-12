@@ -11,7 +11,7 @@ void ns_set_email(char *uid, char *target, char *msg){
     nickgroup *grp;
     email = strtok_r(msg, " ", &spaces);
     acc = getNickAccountByNick(target);
-    if(!hasNickServPermission(uid, acc, 2, "SETEMAIL", "SET")){
+    if(!hasNickServPermission(uid, acc, "ns.set.email")){
         ns_message(uid, "Access denied.");
         return;
     }
@@ -41,7 +41,7 @@ void ns_set_password(char *uid, char *target, char *msg){
     sha256_context ctx;
     pass = strtok_r(msg, " ", &spaces);
     acc = getNickAccountByNick(target);
-    if(!hasNickServPermission(uid, acc, 2, "SETPASSWORD", "SET")){
+    if(!hasNickServPermission(uid, acc, "ns.set.password")){
         ns_message(uid, "Access denied.");
         return;
     }
@@ -74,7 +74,7 @@ void ns_set_nick(char *uid, char *target, char *msg){
     nickaccount *acc;
     newnick = strtok_r(msg, " ", &spaces);
     acc = getNickAccountByNick(target);
-    if(!hasNickServPermission(uid, acc, 2, "SETNICK", "SET")){
+    if(!hasNickServPermission(uid, acc, "ns.set.nick")){
         ns_message(uid, "Access denied.");
         return;
     }
@@ -94,6 +94,9 @@ void ns_sethelp_nick(char *uid, char *msg){
 
 
 void INIT_MOD(){
+    addPermission("ns.set.nick");
+    addPermission("ns.set.email");
+    addPermission("ns.set.password");
     addNickServSetOption("EMAIL", "Sets an email for the group", ns_sethelp_email, ns_set_email);
     addNickServSetOption("PASSWORD", "Sets a password for the group", ns_sethelp_password, ns_set_password);
     addNickServSetOption("NICK", "Changes casing for a nick", ns_sethelp_nick, ns_set_nick);

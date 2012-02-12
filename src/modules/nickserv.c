@@ -173,6 +173,7 @@ nickgroup *createNickGroup(nickaccount *acc, char *pass, char *email){
     group->metadata = NULL;
     group->main = acc;
     acc->group = group;
+    group->class = defaultpermclass;
     /* removeNickFromGroup(acc, acc->group); */
     rand = fopen("/dev/urandom","r");
     if(rand){
@@ -293,9 +294,27 @@ void removeNickFromGroup(nickaccount *acc, nickgroup *group){
 }
 
 
-char hasNickServPermission(char *uid, nickaccount *acc, int flags, ...){
-    /* TODO: this whole thing */
-    return 1;
+char hasNickServPermission(char *uid, nickaccount *acc, char *permname){
+    permclass *class;
+    int perm, srcperm;
+    nickaccount *source;
+    user *U;
+    if(!acc)
+        return 0;/* not a valid nick account */
+    if(!(U = getUser(uid)))
+        return 0;/* not a valid user */
+    class = acc->group->class;
+    perm = getPermission(class->name, permname);
+    if(irccasecmp(acc->nick, U->nick)){/* source acting on target (acc) */
+        source = getNickAccountByNick(U->nick);
+        if(!source)
+            return 0;
+        srcperm = getPermission(source->group->class->name, permname);
+        if((srcperm&~PERM_EQUAL)&&((srcperm&PERM_LEVEL)<=(perm&PERM_LEVEL)))
+            return 0;
+        perm = srcperm;
+    }
+    return perm&PERM_LEVEL;
 }
 
 char *getLocalTimeString(char *uid, time_t time){
@@ -575,6 +594,7 @@ static void setupTables(){
             group->nicks = NULL;/* add later */
             group->metadata = NULL;
             group->main = NULL;/* set later */
+            group->class = defaultpermclass;
             memcpy(group->passmethod, passmethod, 4);
             memcpy(group->passwd, passwd, 32);
             oldGroupid = groupid;

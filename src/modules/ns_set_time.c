@@ -88,7 +88,7 @@ void ns_set_time(char *uid, char *target, char *msg){
     cmd = strtok_r(msg, " ", &spaces);
     arg = strtok_r(NULL, " ", &spaces);
     acc = getNickAccountByNick(target);
-    if(!hasNickServPermission(uid, acc, 2, "SETTIME", "SET")){
+    if(!hasNickServPermission(uid, acc, "ns.set.time")){
         ns_message(uid, "Access denied.");
         return;
     }
@@ -110,5 +110,6 @@ void ns_sethelp_time(char *uid, char *msg){
 }
 
 void INIT_MOD(){
+    addPermission("ns.set.time");
     addNickServSetOption("TIME", "Sets time information for a group", ns_sethelp_time, ns_set_time);
 }

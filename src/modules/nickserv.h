@@ -25,6 +25,7 @@ struct _nickgroup {
     nickaccount *main;
     nicklist *nicks;
     metanode *metadata;
+    permclass *class;
 };
 
 struct _nickaccount {
@@ -53,7 +54,7 @@ extern void addNickServHelp(char *command, char *shorthelp, void (*longhelp)(cha
 extern void addNickServSetOption(char *option, char *shorthelp, void (*longhelp)(char *uid, char *msg), void (*callback)(char *uid, char *target, char *msg));
 char *getLocalTimeString(char *uid, time_t time);
 void ns_message(char *uid, char *str, ...);
-extern char hasNickServPermission(char *uid, nickaccount *acc, int flags, ...);
+char hasNickServPermission(char *uid, nickaccount *acc, char *permname);
 
 extern char valid_email(char *email);
 

@@ -166,7 +166,7 @@ killVal[0]:
         return;
     }
     acc = getNickAccountByNick(target);
-    if(!hasNickServPermission(uid, acc, 2, "SETKILL", "SET")){
+    if(!hasNickServPermission(uid, acc, "ns.set.kill")){
         ns_message(uid, "Access denied.");
         return;
     }
@@ -203,6 +203,7 @@ void ns_sethelp_kill(char *uid, char *msg){
 }
 
 void INIT_MOD(){
+    addPermission("ns.set.kill");
     hook_event(EVENT_NICK, ns_protection_onnick);
     hook_event(EVENT_CONNECT, ns_protection_onconnect);
     guestSeed = time(NULL)&0xFFFF;
