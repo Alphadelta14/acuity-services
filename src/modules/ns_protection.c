@@ -42,7 +42,7 @@ void ns_protection_enforce(int argc, char **argv){
 
 void ns_protection_onnick(line *L){
     user *U;
-    char *oldNick, *newNick, *waitStr, *tmpconf, defaultWait[] = "", *args[] = {"", ""};
+    char *oldNick, *newNick, *waitStr, *tmpconf, *modes, defaultWait[] = "", *args[] = {"", ""};
     nickaccount *oldAcc, *newAcc;
     nicklist *nicks;
     int wait;
@@ -62,6 +62,9 @@ void ns_protection_onnick(line *L){
             if(nicks->acc == newAcc){
                 setMetaValue(&U->metadata, "NICK", newNick);
                 aclog(LOG_DEBUG, "%s!%s@%s has automatically identified.", U->nick, U->ident, U->vhost);
+                modes = buildModes(1, MODE_NSREGISTER);
+                setMode(nickserv->uid, L->id, modes);
+                free(modes);
                 return;
             }
             nicks = nicks->next;
