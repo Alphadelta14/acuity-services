@@ -17,6 +17,7 @@ struct _permtxlist {
 
 typedef struct _permclass {
     char *name;
+    int permid;
     struct _permclass *parent;
     permtxlist *mtx;
     struct _permclass *next;
@@ -24,6 +25,7 @@ typedef struct _permclass {
 
 permclass *getPermissionClass(char *name);
 permclass *addPermissionClass(char *name);
+void loadPermissions(void);
 void setPermissionParent(char *name, char *parentname);
 void addPermission(char *name);
 void setPermission(char *classname, char *permname, int perm);

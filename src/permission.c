@@ -3,9 +3,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-permclass defaultperms = {"DEFAULT", NULL, NULL, NULL};
+permclass defaultperms = {"DEFAULT", 0, NULL, NULL, NULL};
 permclass *permclasslist = &defaultperms;
 permclass *defaultpermclass = &defaultperms;
+static unsigned int permclassid = 0;
 
 static permtxlist *createMTX(char *name){
     permtxlist *mtx;
@@ -96,6 +97,7 @@ permclass *addPermissionClass(char *name){
     strcpy(node->name, name);
     node->mtx = NULL;
     node->parent = &defaultperms;
+    node->permid = ++permclassid;
     node->next = defaultperms.next;/* front insertion */
     defaultperms.next = node;
     return node;
@@ -147,4 +149,47 @@ int getPermission(char *classname, char *permname){
             return 0;
     }
     return mtx->perm;
+}
+
+void loadPermissions(){
+    void *result;
+    int classid, parent, perm;
+    char *classname, *permname;
+    permclass *class = &defaultperms, *parentclass;
+    permclassid = 0;
+    db_query("CREATE TABLE IF NOT EXISTS `permclass` ("
+    "`classid` int unsigned NOT NULL UNIQUE PRIMARY KEY,"
+    "`classname` text (255) NOT NULL,"
+    "`parent` int unsigned);", NULL, NULL);
+    db_query("CREATE TABLE IF NOT EXISTS `perms` ("
+    "`classid` int unsigned,"
+    "`permname` text (255) NOT NULL,"
+    "`perm` int unsigned);", NULL, NULL);
+    db_query("SELECT `perms`.`classid`, `classname`, `parent`, `permname`, `perm`"
+    "FROM `permclass` LEFT JOIN `perms` ON"
+    "`perms`.`classid` = `permclass`.`classid` ORDER BY `perms`.`classid`;", &result, NULL);
+    while(db_fetch_row(result, "isisi", &classid, &classname, &parent, &permname, &perm)==5){
+        aclog(LOG_DEBUG, "%s %s %i\n", classname, permname, perm);
+        if(classid!=permclassid){
+            safemallocvoid(class, permclass);
+            safenmallocvoid(class->name, char, strlen(classname)+1);
+            strcpy(class->name, classname);
+            class->mtx = NULL;
+            class->parent = &defaultperms;
+            class->permid = permclassid;
+            if(parent!=0){
+                parentclass = defaultperms.next;
+                while(parentclass){
+                    if(parentclass->permid==parent){
+                        class->parent = parentclass;
+                        break;
+                    }
+                    parentclass = parentclass->next;
+                }
+            }
+            class->next = defaultperms.next;
+            defaultperms.next = class;
+        }
+        setPermission(class->name, permname, perm);
+    }
 }

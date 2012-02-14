@@ -97,6 +97,7 @@ int acuity_start(){
     dlclose(handle); */
     loadConfig();
     open_database();
+    loadPermissions();
     loadModule("network");
     loadModule("inspircd20");
     loadModule("nickserv");
