@@ -13,7 +13,7 @@ modnode *modlist = NULL;
 void *loadModule(const char *modname){
     char *fname;
     void *modhandle;
-    modnode *node, *prev;
+    modnode *node;
 
     aclog(LOG_DEBUG,"Loading module: %s",modname);
     safenmalloc(fname,char,sizeof(char)*(strlen(modname)+13),NULL);/*"modules/%s.so"*/
@@ -28,22 +28,33 @@ void *loadModule(const char *modname){
         return NULL;
     }
     *(void **) (&initModule) = dlsym(modhandle, "INIT_MOD");
-
     safemalloc(node,modnode,NULL);
+    node->handle = modhandle;
     safenmalloc(node->name,char,sizeof(char)*(strlen(modname)+1),NULL);
     strcpy(node->name,modname);
-    node->next = NULL;
-    if(!modlist)
-        modlist = node;
-    else{
-        prev = modlist;
-        while(prev->next) prev = prev->next;
-        prev->next = node;
-    }
+    node->next = modlist;
+    modlist = node;
     aclog(LOG_DEBUG,"  [OK]\n");
     if(initModule)
         initModule();
     return modhandle;
+}
+
+void unloadModules(){
+    modnode *node, *prev;
+    node = modlist;
+    while(node){
+        aclog(LOG_DEBUG,"Unloading module: %s", node->name);
+        *(void **) (&termModule) = dlsym(node->handle, "TERM_MOD");
+        if(termModule)
+            termModule();
+        prev = node;
+        node = node->next;
+        free(prev->name);
+        free(prev);
+        aclog(LOG_DEBUG,"\t[OK]\n");
+    }
+    modlist = NULL;
 }
 
 char isModuleLoaded(char *modname){

@@ -10,7 +10,9 @@ typedef struct _modnode {
 
 extern modnode *modlist;
 void *loadModule(const char *modname);
+void unloadModules(void);
 void loadDependencies(int count, ...);
 void (*initModule)(void);
+void (*termModule)(void);
 
 #endif /* MODULE_H */
