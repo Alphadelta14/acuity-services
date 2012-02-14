@@ -411,8 +411,6 @@ int _chanStatusAppend(char *channame, char *status){
 
 
 void INIT_MOD(){
-    userlist = NULL;
-    chanlist = NULL;
     addUser = &_addUser;
     getUser = &_getUser;
     addChannel = &_addChannel;

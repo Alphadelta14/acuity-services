@@ -84,25 +84,8 @@ int acuity_start(){
     signal(SIGSEGV, panic);/* only hook on released versions */
 #endif /* DEVEL */
     aclog = &errprintf;
-    /*en = eventlist;
-    for(i=0; i<NUM_EVENTS; i++){
-        en->
-    }*/
-
-    /* if(!(handle = dlopen("modules/config.so", RTLD_NOW))){
-        printf("%s\n",dlerror());
-        return 1;
-    }
-    *(void **) (&conf) = dlsym(handle, "DEFAULTCONF");
-    conf();
-    *(void **) (&conf) = dlsym(handle, "CONFIG");
-    conf();
-    *(void **) (&conf) = dlsym(handle, "INFO");
-    conf();
-    //server = *(serverconn*)dlsym(handle, "server");
-    printf("%d\n",server.port);
-
-    dlclose(handle); */
+    userlist = NULL;
+    chanlist = NULL;
     loadConfig();
     open_database();
     loadPermissions();
