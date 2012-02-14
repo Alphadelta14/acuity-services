@@ -470,6 +470,7 @@ void ns_group(char *uid, char *msg){
         setMode(nickserv->uid, uid, modes);
         free(modes);
         addNickToGroup(acc, newgroup);
+        createSavedNickAccount(acc);
     } else {
         if(acc->group == newgroup){
             ns_message(uid, "You already belong to that group.");
@@ -625,7 +626,7 @@ static void setupTables(){
     cNickID = maxnickid+1;
 }
 
-void ns_save(char *uid, char *msg){
+void ns_save(){
     nickgroup *group;
     nickgrouplist *groups;
     blobdata passwd, passmethod;
@@ -657,11 +658,14 @@ void INIT_MOD(){
     addNickServHelp("IDENTIFY", "Identifies your nick",ns_identifyhelp);
     registerNickServCommand("set",ns_set);
     addNickServHelp("SET", "Sets options for your nick",ns_sethelp);
-    registerNickServCommand("save",ns_save);
     loadModule("ns_set_basic");
     loadModule("ns_info");
     loadModule("ns_set_time");
     loadModule("ns_list");
     loadModule("ns_protection");
     /* loadModule("ns_drop"); Broken */
+}
+
+void TERM_MOD(){
+    ns_save();
 }
