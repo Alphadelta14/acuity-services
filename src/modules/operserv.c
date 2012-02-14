@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
+#include <unistd.h>
 #include "operserv.h"
 
 user *operserv = NULL;
@@ -57,6 +59,11 @@ void os_quit(char *uid, char *msg){
     exit(0);
 }
 
+void os_shutdown(char *uid, char *msg){
+    /* XXX: should call sigquit, though, not available for the call */
+    kill(getpid(), SIGQUIT);
+}
+
 void os_perm(char *uid, char *msg){
     char *cmd, *spaces, *class, *permname, *value;
     user *U;
@@ -93,5 +100,6 @@ void INIT_MOD(){
     hook_event(EVENT_MESSAGE, fireOperServCommand);
     registerOperServCommand("test", os_test);
     registerOperServCommand("quit", os_quit);
+    registerOperServCommand("shutdown", os_shutdown);
     registerOperServCommand("perm", os_perm);
 }
