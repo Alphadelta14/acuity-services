@@ -669,7 +669,7 @@ void setMode(char *senderid, char *target, char *modes){
     aclog(LOG_DEBUG,"%s set modes %s on %s.\n", senderid, modes, target);
 }
 
-void closeIRC(char *reason){
+void closeIRCInsp(char *reason){
     char buff[512];
     snprintf(buff, 512, ":%s SNONOTICE L :%s\r\n", getLocalId(), reason);
     send_raw_line(buff);
@@ -709,6 +709,7 @@ void INIT_MOD(){
     generateUID = &generateUIDInsp;
     createUser = &createUserInsp;   
     isValidNick = &isValidNickInsp;
+    closeIRC = &closeIRCInsp;
     localId = getConfigValue("ServerId");
     /*addTimerEvent(printchanmap, time(NULL)+5, 0);
     addTimerEvent(printchanmap, time(NULL)+45, 0);

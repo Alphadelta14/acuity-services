@@ -35,6 +35,10 @@ void errprintf(int flags, ...){
     va_end(args);
 }
 
+void _closeIRC(char *quit){
+    exit(0);
+}
+
 int main(int argc, char *argv[]){
     if(argc==1){
         printf("Usage: %s (start|stop|rehash)\n",argv[0]);
@@ -57,8 +61,9 @@ void sighup(){
     exit(1);
 }
 void sigquit(){
-    printf("got SIGQUIT\n");
-    exit(1);
+    aclog(LOG_ERROR, "Acuity received QUIT signal. Shutting down.\n");
+    closeIRC("Acuity received QUIT signal. Shutting down.");
+    exit(0);
 }
 
 int acuity_start(){
@@ -70,8 +75,10 @@ int acuity_start(){
     fpid = fopen("acuity.pid", "w");
     fprintf(fpid, "%d", getpid());
     fclose(fpid);
+    closeIRC = &_closeIRC;
     signal(SIGHUP, sighup);
     signal(SIGQUIT, sigquit);
+    signal(SIGINT, sigquit);
 #ifndef DEVEL
     signal(SIGSEGV, panic);/* only hook on released versions */
 #endif /* DEVEL */
