@@ -9,7 +9,7 @@ Only use raw commands, we can't really buffer stuff.
 char panic_buffer_reserves[] = "";
 
 void panic(){
-    
-    printf("We've come across a horrible error that has caused us to cease all functionality. That is all. [TERMINATED]\n");
+    aclog(LOG_ERROR, "We've come across a horrible error that has caused us to cease all functionality. That is all. [TERMINATED]\n");
+    unloadModules();
     exit(1);
 }
