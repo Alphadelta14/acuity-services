@@ -31,6 +31,10 @@ return;\
 }\
 } while(0);
 
+#define safefree(pointer) do{ if( pointer ) free( pointer );\
+pointer = NULL;\
+} while(0);
+
 /* Defining mode macros. These will be used to build/store modes:
  * +a = MODE_A
  * -a = (MODE_A|MODE_REMOVE)
