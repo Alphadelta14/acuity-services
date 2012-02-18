@@ -55,7 +55,6 @@ void fireNickServCommand(line *l){
     fireServiceCommand(&nickservcmds, nickserv, l);
 }
 
-
 void ns_message(char *uid, char *str, ...){
     va_list args;
     va_start(args, str);
@@ -646,8 +645,15 @@ void ns_save(){
 
 void INIT_MOD(){
     setupTables();
-    hook_event(EVENT_LINK, createNickServ);
-    hook_event(EVENT_MESSAGE, fireNickServCommand);
+    if(MOD_STATE==MOD_RELOAD){
+        nickserv = popPtr();
+        nickservcmds = popPtr();
+        nickservSetOpts = popPtr();
+        nickservHelp = popPtr();
+    }else{
+        hook_event(EVENT_LINK, createNickServ);
+        hook_event(EVENT_MESSAGE, fireNickServCommand);
+    }
     registerNickServCommand("help",ns_help);
     registerNickServCommand("test",testCmd);
     registerNickServCommand("register",ns_register);
@@ -667,5 +673,41 @@ void INIT_MOD(){
 }
 
 void TERM_MOD(){
+    nickgroup *group;
+    nickgrouplist *groups, *prevgroups;
+    nicklist *nicks, *prevnicks;
     ns_save();
+    groups = registerednickgroups;
+    while(groups){
+        group = groups->group;
+        nicks = group->nicks;
+        while(nicks){
+            prevnicks = nicks;
+            nicks = nicks->next;
+            safefree(prevnicks);
+        }
+        safefree(group->email);
+        clearMetadata(&group->metadata);
+        safefree(group);
+        prevgroups = groups;
+        groups = groups->next;
+        safefree(prevgroups);
+    }
+    registerednickgroups = NULL;
+    nicks = registerednicks;
+    while(nicks){
+        safefree(nicks->acc->nick);
+        clearMetadata(&nicks->acc->metadata);
+        safefree(nicks->acc);
+        prevnicks = nicks;
+        nicks = nicks->next;
+        safefree(prevnicks);
+    }
+    registerednicks = NULL;
+    if(MOD_STATE==MOD_RELOAD){
+        pushPtr(nickservHelp);
+        pushPtr(nickservSetOpts);
+        pushPtr(nickservcmds);
+        pushPtr(nickserv);
+    }
 }
