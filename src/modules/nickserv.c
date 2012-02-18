@@ -440,12 +440,12 @@ void ns_group(char *uid, char *msg){
     }
     newgroup = T->group;
     if(!newgroup){
-        aclog(LOG_DEBUG, "%s does not have a group associated with their nick.",target);
+        aclog(LOG_DEBUG, "%s does not have a group associated with their nick.\n",target);
         return;
     }
     if(!matchPassword(pass, newgroup->passwd, newgroup->passmethod)){
         /* TODO: password fail counter implementation */
-        aclog(LOG_DEBUG | LOG_NOAUTH, "%s failed to group to %s's group. Password did not match.",U->nick, target);
+        aclog(LOG_DEBUG | LOG_NOAUTH, "%s failed to group to %s's group. Password did not match.\n",U->nick, target);
         ns_message(uid, "Access denied. Password does not match.");
         return;
     }
@@ -457,7 +457,7 @@ void ns_group(char *uid, char *msg){
     tmpconf = getConfigValue("NickServMaxGroupedNicks");
     if(tmpconf){
         if(membercount >= atoi(tmpconf)){
-            aclog(LOG_DEBUG, "%s failed to group to %s's group. Max members has already been reached.",U->nick, target);
+            aclog(LOG_DEBUG, "%s failed to group to %s's group. Max members has already been reached.\n",U->nick, target);
             ns_message(uid, "This group already has %d members in it. No more can be added.", membercount);
             return;
         }
@@ -530,7 +530,7 @@ void ns_identify(char *uid, char *msg){
     free(modes);
     setMetaValue(&U->metadata, "nick", U->nick);
     ns_message(uid, "You have identified for %s.", U->nick);
-    aclog(LOG_DEBUG, "%s!%s@%s has identified.", U->nick, U->ident, U->vhost);
+    aclog(LOG_DEBUG, "%s!%s@%s has identified.\n", U->nick, U->ident, U->vhost);
 }
 
 void ns_identifyhelp(char *uid, char *msg){
