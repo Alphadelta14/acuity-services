@@ -104,4 +104,7 @@ metanode *setMetaValue(metanode **metadata, char *key, char *value);
 void delMetaValue(metanode **metadata, char *key);
 void clearMetadata(metanode **metadata);
 
+int pushPtr(void *ptr);
+void *popPtr();
+
 #endif /* _ACTYPES_H */

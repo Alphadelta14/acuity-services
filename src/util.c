@@ -3,6 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define STACK_PTR_SIZE 16
+
+typedef struct _ptrStack{
+    void *vals[STACK_PTR_SIZE];
+    int top;
+} ptrStack;
+
+static ptrStack savedPtrs = {{}, 0};
+
 char *getMetaValue(metanode **metadata, char *key){
     metanode *node;
     node = *metadata;
@@ -83,4 +92,18 @@ void clearMetadata(metanode **metadata){
         free(prev);
     }
     *metadata = NULL;
+}
+
+int pushPtr(void *ptr){
+    if(savedPtrs.top<STACK_PTR_SIZE){
+        savedPtrs.vals[savedPtrs.top++] = ptr;
+    }else{
+        return -1;
+    }
+    return STACK_PTR_SIZE-savedPtrs.top;
+}
+void *popPtr(){
+    if(!savedPtrs.top)
+        return NULL;
+    return savedPtrs.vals[--savedPtrs.top];
 }
