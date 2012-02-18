@@ -43,6 +43,27 @@ void *loadModule(const char *modname){
     return modhandle;
 }
 
+void unloadModule(char *name){
+    modnode *node, *prev;
+    node = modlist;
+    MOD_STATE = MOD_UNLOAD;
+    while(node){
+        if(!strcasecmp(node->name, name)){
+            aclog(LOG_DEBUG,"Unloading module: %s", node->name);
+            *(void **) (&termModule) = dlsym(node->handle, "TERM_MOD");
+            if(termModule)
+                termModule();
+            free(node->name);
+            prev->next = node->next;
+            free(node);
+            aclog(LOG_DEBUG,"\t[OK]\n");
+            return;
+        }
+        prev = node;
+        node = node->next;
+    }
+}
+
 void unloadModules(){
     modnode *node, *prev;
     node = modlist;

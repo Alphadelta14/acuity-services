@@ -16,6 +16,7 @@ typedef struct _modnode {
 extern modnode *modlist;
 void *loadModule(const char *modname);
 void unloadModules(void);
+void unloadModule(char *name);
 void loadDependencies(int count, ...);
 void (*initModule)(void);
 void (*termModule)(void);
