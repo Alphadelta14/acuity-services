@@ -11,6 +11,10 @@
 modnode *modlist = NULL;
 int MOD_STATE = MOD_IDLE;
 
+char *moduleError(){
+    return dlerror();
+}
+
 void *loadModule(const char *modname){
     char *fname;
     void *modhandle;
@@ -26,7 +30,7 @@ void *loadModule(const char *modname){
     free(fname);
     if(!modhandle){
         aclog(LOG_DEBUG,"  [FAIL]\n");
-        aclog(LOG_ERROR,"Could not open '%s' module: %s\n",modname,dlerror());
+        aclog(LOG_ERROR,"Could not open '%s' module: %s\n", modname, dlerror());
         return NULL;
     }
     *(void **) (&initModule) = dlsym(modhandle, "INIT_MOD");
