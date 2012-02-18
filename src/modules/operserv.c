@@ -102,4 +102,5 @@ void INIT_MOD(){
     registerOperServCommand("quit", os_quit);
     registerOperServCommand("shutdown", os_shutdown);
     registerOperServCommand("perm", os_perm);
+    loadModule("os_mod");
 }
