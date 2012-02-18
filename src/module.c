@@ -83,6 +83,11 @@ void unloadModules(){
     modlist = NULL;
 }
 
+void reloadModule(char *modname){
+    unloadModule(modname);
+    loadModule(modname);
+}
+
 char isModuleLoaded(char *modname){
     modnode *node;
     node = modlist;

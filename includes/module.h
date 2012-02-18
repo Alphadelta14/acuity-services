@@ -17,6 +17,7 @@ extern modnode *modlist;
 void *loadModule(const char *modname);
 void unloadModules(void);
 void unloadModule(char *name);
+void reloadModule(char *modname);
 void loadDependencies(int count, ...);
 void (*initModule)(void);
 void (*termModule)(void);
