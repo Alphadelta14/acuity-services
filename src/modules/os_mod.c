@@ -18,7 +18,6 @@ void os_mod_load(char *uid, char *args){
     }
 }
 
-
 void os_mod_unload(char *uid, char *args){
     char *modname, *spaces;
     modname = strtok_r(args, " ", &spaces);
@@ -29,6 +28,20 @@ void os_mod_unload(char *uid, char *args){
     unloadModule(modname);
     os_message(uid, "Unloaded %s", modname);
 }
+
+void os_mod_list(char *uid, char *args){
+    modnode *node;
+    int count = 0;
+    node = modlist;
+    os_message(uid, "Loaded modules:");
+    while(node){
+        os_message(uid, "    %s", node->name);
+        count++;
+        node = node->next;
+    }
+    os_message(uid, "Total modules: %d", count);
+}
+
 
 void os_mod(char *uid, char *msg){
     char *cmd, *spaces;
@@ -43,7 +56,7 @@ void os_mod(char *uid, char *msg){
     }else if(!strcasecmp(cmd, "UNLOAD")){
         os_mod_unload(uid, spaces);
     }else if(!strcasecmp(cmd, "LIST")){
-
+        os_mod_list(uid, spaces);
     }
 }
 
