@@ -9,12 +9,14 @@
 #include <actypes.h>
 
 modnode *modlist = NULL;
+int MOD_STATE = MOD_IDLE;
 
 void *loadModule(const char *modname){
     char *fname;
     void *modhandle;
     modnode *node;
 
+    MOD_STATE = MOD_LOAD;
     aclog(LOG_DEBUG,"Loading module: %s",modname);
     safenmalloc(fname,char,sizeof(char)*(strlen(modname)+13),NULL);/*"modules/%s.so"*/
     strcpy(fname,"modules/");
@@ -37,12 +39,14 @@ void *loadModule(const char *modname){
     aclog(LOG_DEBUG,"  [OK]\n");
     if(initModule)
         initModule();
+    MOD_STATE = MOD_IDLE;
     return modhandle;
 }
 
 void unloadModules(){
     modnode *node, *prev;
     node = modlist;
+    MOD_STATE = MOD_UNLOAD;
     while(node){
         aclog(LOG_DEBUG,"Unloading module: %s", node->name);
         *(void **) (&termModule) = dlsym(node->handle, "TERM_MOD");
@@ -54,6 +58,7 @@ void unloadModules(){
         free(prev);
         aclog(LOG_DEBUG,"\t[OK]\n");
     }
+    MOD_STATE = MOD_IDLE;
     modlist = NULL;
 }
 

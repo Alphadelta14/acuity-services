@@ -1,6 +1,11 @@
 #ifndef MODULE_H
 #define MODULE_H
 
+#define MOD_IDLE    0x0
+#define MOD_LOAD    0x1
+#define MOD_UNLOAD  0x2
+#define MOD_RELOAD  0x3
+
 typedef struct _modnode {
     char *name;
     void *handle;
@@ -14,5 +19,6 @@ void unloadModules(void);
 void loadDependencies(int count, ...);
 void (*initModule)(void);
 void (*termModule)(void);
+extern int MOD_STATE;
 
 #endif /* MODULE_H */
