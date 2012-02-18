@@ -48,7 +48,7 @@ void *loadModule(const char *modname){
 }
 
 void unloadModule(char *name){
-    modnode *node, *prev;
+    modnode *node, *prev = NULL;
     node = modlist;
     MOD_STATE = MOD_UNLOAD;
     while(node){
@@ -58,7 +58,10 @@ void unloadModule(char *name){
             if(termModule)
                 termModule();
             free(node->name);
-            prev->next = node->next;
+            if(prev)
+                prev->next = node->next;
+            else
+                modlist = node;
             free(node);
             aclog(LOG_DEBUG,"\t[OK]\n");
             return;
