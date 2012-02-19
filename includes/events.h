@@ -37,10 +37,10 @@ typedef struct _expirylist {
 } expirylist;
 
 extern expirylist timerList;
-extern eventnode eventlist[];
 
 void fire_event(int event, line *L);
 void hook_event(int event, void (*callback)(line *L));
+void unhook_event(int event, void (*callback)(line *L));
 void addTimerEvent(void(*callback)(int argc, char **argv), time_t expires, int argc, ...);
 void onTimer(void);
 

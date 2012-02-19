@@ -6,14 +6,21 @@
 #include <events.h>
 #include <acuity.h>
 
-eventnode eventlist[NUM_EVENTS] = {{NULL, NULL}};
+eventnode *eventlist[NUM_EVENTS] = {NULL};
 expirylist timerList = {NULL};
 
 void hook_event(int event, void (*callback)(line *L)){
     eventnode *N;
     if(event >= NUM_EVENTS)
         return;
-    N = &eventlist[event];
+    N = eventlist[event];
+    if(!N){
+        safemallocvoid(N, eventnode);
+        N->next = NULL;
+        N->callback = callback;
+        eventlist[event] = N;
+        return;
+    }
     while(N->next)
         N = N->next;
     safemallocvoid(N->next, eventnode);
@@ -26,12 +33,34 @@ void hook_event(int event, void (*callback)(line *L)){
     N->next = NULL;
 }
 
+void unhook_event(int event, void (*callback)(line *L)){
+    eventnode *node, *prev;
+    if(event >= NUM_EVENTS)
+        return;
+    prev = node = eventlist[event];
+    if(node->callback==callback){
+        eventlist[event] = node->next;
+        safefree(node);
+        return;
+    }
+    while(node){
+        if(node->callback==callback){
+            prev->next = node->next;
+            safefree(node);
+            return;
+        }
+        prev = node;
+        node = node->next;
+    }
+
+}
+
 void fire_event(int event, line *L){
     eventnode *N;
 
     if(event >= NUM_EVENTS)
         return;
-    N = &eventlist[event];
+    N = eventlist[event];
     while(N){
         if(N->callback)
             N->callback(L);
