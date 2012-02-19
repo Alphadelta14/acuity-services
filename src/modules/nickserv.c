@@ -51,6 +51,10 @@ void registerNickServCommand(char *cmd, void (*callback)(char *uid, char *msg)){
     addServiceCommand(&nickservcmds, cmd, callback);
 }
 
+void unregisterNickServCommand(char *cmd){
+    delServiceCommand(&nickservcmds, cmd);
+}
+
 void fireNickServCommand(line *l){
     fireServiceCommand(&nickservcmds, nickserv, l);
 }
@@ -653,6 +657,12 @@ void INIT_MOD(){
     }else{
         hook_event(EVENT_LINK, createNickServ);
         hook_event(EVENT_MESSAGE, fireNickServCommand);
+        loadModule("ns_set_basic");
+        loadModule("ns_info");
+        loadModule("ns_set_time");
+        loadModule("ns_list");
+        loadModule("ns_protection");
+        /* loadModule("ns_drop"); Broken */
     }
     registerNickServCommand("help",ns_help);
     registerNickServCommand("test",testCmd);
@@ -664,12 +674,6 @@ void INIT_MOD(){
     addNickServHelp("IDENTIFY", "Identifies your nick",ns_identifyhelp);
     registerNickServCommand("set",ns_set);
     addNickServHelp("SET", "Sets options for your nick",ns_sethelp);
-    loadModule("ns_set_basic");
-    loadModule("ns_info");
-    loadModule("ns_set_time");
-    loadModule("ns_list");
-    loadModule("ns_protection");
-    /* loadModule("ns_drop"); Broken */
 }
 
 void TERM_MOD(){
@@ -710,4 +714,10 @@ void TERM_MOD(){
         pushPtr(nickservcmds);
         pushPtr(nickserv);
     }
+    unregisterNickServCommand("help");
+    unregisterNickServCommand("test");
+    unregisterNickServCommand("register");
+    unregisterNickServCommand("group");
+    unregisterNickServCommand("identify");
+    unregisterNickServCommand("set");
 }

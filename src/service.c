@@ -207,6 +207,26 @@ void addServiceCommand(commandnode **cmds, char *cmd, void (*callback)(char *uid
     }
 }
 
+void delServiceCommand(commandnode **cmds, char *cmd){
+    commandnode *node, *prev;
+    node = prev = *cmds;
+    if(!strcasecmp(node->cmd, cmd)){
+        safefree(node->cmd);
+        *cmds = node->next;
+        safefree(node);
+        return;
+    }
+    while((node = node->next)){
+        if(!strcasecmp(node->cmd, cmd)){
+            safefree(node->cmd);
+            prev->next = node->next;
+            safefree(node);
+            return;
+        }
+        prev = node;
+    }
+}
+
 void fireServiceCommand(commandnode **cmds, user *service, line *l){
     int cmdlen;
     char *index, *badCmd;
