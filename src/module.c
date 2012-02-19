@@ -20,6 +20,13 @@ void *loadModule(const char *modname){
     void *modhandle;
     modnode *node;
 
+    node = modlist;
+    while(node){
+        if(!strcasecmp(node->name,modname)){
+            return node;
+        }
+        node = node->next;
+    }
     MOD_STATE = MOD_LOAD;
     aclog(LOG_DEBUG,"Loading module: %s",modname);
     safenmalloc(fname,char,sizeof(char)*(strlen(modname)+13),NULL);/*"modules/%s.so"*/
