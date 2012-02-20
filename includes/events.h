@@ -49,6 +49,7 @@ void fire_named_event(char *name, line *L);
 void hook_event(int event, void (*callback)(line *L));
 void hook_named_event(char *name, void (*callback)(line *L));
 void unhook_event(int event, void (*callback)(line *L));
+void unhook_named_event(char *name, void (*callback)(line *L));
 void addTimerEvent(void(*callback)(int argc, char **argv), time_t expires, int argc, ...);
 void onTimer(void);
 
