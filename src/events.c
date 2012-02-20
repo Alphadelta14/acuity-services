@@ -7,30 +7,30 @@
 #include <acuity.h>
 
 eventnode *eventlist[NUM_EVENTS] = {NULL};
+namedeventnode *namedeventlist = NULL;
 expirylist timerList = {NULL};
 
-void hook_event(int event, void (*callback)(line *L)){
+static void addEventToList(eventnode **eventlist, void (*callback)(line *L)){
     eventnode *N;
-    if(event >= NUM_EVENTS)
-        return;
-    N = eventlist[event];
+    N = *eventlist;
     if(!N){
         safemallocvoid(N, eventnode);
         N->next = NULL;
         N->callback = callback;
-        eventlist[event] = N;
+        *eventlist = N;
         return;
     }
     while(N->next)
         N = N->next;
     safemallocvoid(N->next, eventnode);
-    if(!N->next){
-        aclog(LOG_ERROR,"hook_event failed: unable to allocate memory\n");
-        return;
-    }
     N = N->next;
     N->callback = callback;
     N->next = NULL;
+}
+
+void hook_event(int event, void (*callback)(line *L)){
+    if(event<NUM_EVENTS)
+        addEventToList(&eventlist[event], callback);
 }
 
 void unhook_event(int event, void (*callback)(line *L)){
@@ -52,19 +52,51 @@ void unhook_event(int event, void (*callback)(line *L)){
         prev = node;
         node = node->next;
     }
-
 }
 
-void fire_event(int event, line *L){
-    eventnode *N;
+void hook_named_event(char *name, void (*callback)(line *L)){
+    namedeventnode *namednode;
+    namednode = namedeventlist;
+    while(namednode){
+        if(!strcasecmp(namednode->name, name)){
+            addEventToList(&namednode->eventlist, callback);
+            return;
+        }
+        namednode = namednode->next;
+    }
+    safemallocvoid(namednode, namedeventnode);
+    safenmallocvoid(namednode->name, char, strlen(name)+1);
+    strcpy(namednode->name, name);
+    namednode->eventlist = NULL;
+    namednode->next = namedeventlist;
+    namedeventlist = namednode;
+    addEventToList(&namednode->eventlist, callback);
+}
 
-    if(event >= NUM_EVENTS)
-        return;
-    N = eventlist[event];
+void fireEventList(eventnode *eventlist, line *L){
+    eventnode *N;
+    N = eventlist;
     while(N){
         if(N->callback)
             N->callback(L);
         N = N->next;
+    }
+}
+
+void fire_event(int event, line *L){
+    if(event < NUM_EVENTS)
+        return;
+    fireEventList(eventlist[event], L);
+}
+
+void fire_named_event(char *name, line *L){
+    namedeventnode *namednode;
+    namednode = namedeventlist;
+    while(namednode){
+        if(!strcasecmp(namednode->name, name)){
+            fireEventList(namednode->eventlist, L);
+            return;
+        }
     }
 }
 

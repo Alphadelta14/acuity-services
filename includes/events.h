@@ -24,6 +24,12 @@ typedef struct _eventnode {
     struct _eventnode *next;
 } eventnode;
 
+typedef struct _namedeventnode {
+    char *name;
+    eventnode *eventlist;
+    struct _namedeventnode *next;
+} namedeventnode;
+
 typedef struct _timer {
     void(*callback)(int argc, char **argv);
     int argc;
@@ -39,7 +45,9 @@ typedef struct _expirylist {
 extern expirylist timerList;
 
 void fire_event(int event, line *L);
+void fire_named_event(char *name, line *L);
 void hook_event(int event, void (*callback)(line *L));
+void hook_named_event(char *name, void (*callback)(line *L));
 void unhook_event(int event, void (*callback)(line *L));
 void addTimerEvent(void(*callback)(int argc, char **argv), time_t expires, int argc, ...);
 void onTimer(void);
