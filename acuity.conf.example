@@ -107,7 +107,7 @@ NickServDefaultProtection "60"
 #######################################################################
 # OperServOper: optional (default: OperServ)
 # The nick for the OperServ client. You shouldn't change this.
-#OperServOper "OperServ"
+#OperServNick "OperServ"
 
 # OperServIdent: optional (default: OperServ)
 # The ident for the OperServ client.
