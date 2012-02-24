@@ -7,6 +7,7 @@ necessarily complete or correct the way it is:
 line parseLineInsp(char *data){
     line L;
     char *dataptr;
+    int paramCount = 0;
 
     L.id = NULL;
     L.command = NULL;
@@ -14,28 +15,53 @@ line parseLineInsp(char *data){
     L.paramCount = 0;
     L.text = NULL;
 
-    if(!data||!data[0]){
+    if(!data||!data[0])
         return L;
-    }
     if(data[0] == ':'){
         L.id = data+1;
-        while(data[0]!=' ') data++;
+        while(data[0] != ' ') data++;
         data[0] = '\0';
         data++;
     }
     L.command = data;
-    while(data[0]!=' '){
-        if(data[0]=='\0')
-            return L;
+    while(data[0] != ' '){
+        if(data[0] == '\0') return L;
         data++;
     }
-    /* Terminate string properly */
     data[0] = '\0';
-
-    /* Shouldn't happen... */
-    if(!L)
-        aclog(LOG_ERROR, "parseLineInsp: L is broken!\n");
     
+    dataptr = ++data;
+    while((dataptr[0] != ':')||((dataptr[0] == ':')&&(dataptr[-1] != ' ')&&(dataptr[-1] != '\0'))){
+        /* include the last space, so that paramCount increases */
+        if(dataptr[0] == ' '){
+            paramCount++;
+        } else if(dataptr[0] == '\0'){
+            paramCount++;
+            break;
+        }
+        dataptr++;
+    }
+    L.paramCount = paramCount;
+    if(L.paramCount){
+        paramCount = 0;
+        L.params = (char**)malloc(sizeof(char*)*L.paramCount);
+        L.params[paramCount++] = data;
+        while((data[1] != ':')||((data[1] == ':')&&(data[0] != ' ')&&(data[0] != '\0'))){
+            if(data[0] == ' '){
+                L.params[paramCount++] = data+1;
+                data[0] = '\0';
+            }else if(data[0] == '\0'){
+                return L;
+            }
+            data++;
+        }
+    }
+    if(data[0] == ' '){
+        data[0] = '\0';
+        data++;
+    }
+    if(data[0] == ':')
+        L.text = data+1;
     return L;
 }
 
@@ -44,18 +70,19 @@ Things to note:
   - No spaces after anything that is followed by a parenthesis: if,
     while, function calls, etc
   - No spaces in front of opening braces
-  - No spaces in front of or after any comparison operator
   - No spaces in front of or after simple || and && conditions (such as
     those that don't require parentheses to be readable)
+- Spaces are used when:
+  - surround any comparison operator
+  - after a function argument
+  - around an assignment operator
 - /* This is the only sane way to comment. No //. */
 - It's okay to leave out a newline for trivial statements for a one-line
   if followup statement (if(moo) return L;).
-- Assignments *do* take spaces.
 - All braces go to the same line as the statement that requires them
 - Always declare the variables you use in the code at the beginning of
   the function, indenting them as if they were normal code.
 - One-character variables (L, U, etc.) are required to be uppercase.
-- Functions take a space after the comma, in all cases.
 Indentation:
 - Four spaces per level of indent, this includes one-line if follow-up
   statements, too.
