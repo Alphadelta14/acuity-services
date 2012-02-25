@@ -662,7 +662,7 @@ void INIT_MOD(){
         loadModule("ns_set_time");
         loadModule("ns_list");
         loadModule("ns_protection");
-        /* loadModule("ns_drop"); Broken */
+        loadModule("ns_drop");
     }
     registerNickServCommand("help",ns_help);
     registerNickServCommand("test",testCmd);
