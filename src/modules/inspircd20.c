@@ -33,94 +33,7 @@ char *getLocalId(){
     else
         return "";
 }
-/*
-:644AAAAAA PRIVMSG #lobby :hi
-*/
-line parseLineInsp2(char *data){
-    line L;
-    char *c;
-    int paramCount = 0;
 
-    L.command = NULL;
-    L.params = NULL;
-    L.paramCount = 0;
-    L.text = NULL;
-    if(!data){
-        return L;
-    }
-    if(data[0] == ':'){
-        L.id = data+1;
-    } else {
-        L.id = NULL;
-        L.command = data;
-        while((data[0] != ' ')&&(data[0] != '\0')) data++;
-        if(data[0] == '\0'){
-            return L;
-        }
-        data[0] = '\0';
-        data++;
-        c = data;
-        while((c[0] != '\0')&&(c[1] != ':')){
-            if(c[0] == ' '){
-                paramCount++;
-            }
-            c++;
-        }
-        paramCount++;/* for the \0 terminated param */
-        L.paramCount = paramCount;
-        paramCount = 0;
-        L.params = (char**)malloc(sizeof(char*)*L.paramCount);
-        L.params[paramCount++] = data;
-        while((data[0] != '\0')&&(data[1] != ':')){
-            if(data[0] == ' '){
-                L.params[paramCount++] = data+1;
-                data[0] = '\0';
-            }
-            data++;
-        }
-        if(data[1] == ':'){
-            data[0] = '\0';
-            L.text = data+2;
-        }
-        return L;
-    }
-    while(data[0] != ' ') data++;
-    data[0] = '\0';
-
-    L.command = data+1;
-    while(data[0] != ' ') data++;
-    data[0] = '\0';
-    data++;
-
-    c = data;
-    while(c[1] != ':'){
-        if(c[0] == ' '){
-            paramCount++;
-        } else if(c[0] == '\0'){
-            break;
-        }
-        c++;
-    }
-    L.paramCount = paramCount;
-    if(L.paramCount){
-        paramCount = 0;
-        L.params = (char**)malloc(sizeof(char*)*L.paramCount);
-        L.params[paramCount++] = data;
-        while(data[1] != ':'){
-            if(data[0] == ' '){
-                L.params[paramCount++] = data+1;
-                data[0] = '\0';
-            } else if(data[0] == '\0'){
-                break;
-            }
-            data++;
-        }
-    }
-
-    if(data[1] == ':')
-        L.text = data+2;
-    return L;
-}
 line parseLineInsp(char *data){
     line L;
     char *dataptr;
@@ -132,18 +45,17 @@ line parseLineInsp(char *data){
     L.paramCount = 0;
     L.text = NULL;
 
-    if(!data||!data[0]){
+    if(!data||!data[0])
         return L;
-    }
     if(data[0] == ':'){
         L.id = data+1;
-        while(data[0]!=' ') data++;
+        while(data[0] != ' ') data++;
         data[0] = '\0';
         data++;
     }
     L.command = data;
-    while(data[0]!=' '){
-        if(data[0]=='\0') return L;
+    while(data[0] != ' '){
+        if(data[0] == '\0') return L;
         data++;
     }
     data[0] = '\0';
@@ -168,7 +80,7 @@ line parseLineInsp(char *data){
             if(data[0] == ' '){
                 L.params[paramCount++] = data+1;
                 data[0] = '\0';
-            } else if(data[0] == '\0'){
+            }else if(data[0] == '\0'){
                 return L;
             }
             data++;
@@ -181,7 +93,6 @@ line parseLineInsp(char *data){
     if(data[0] == ':')
         L.text = data+1;
     return L;
-    
 }
 
 void freeLine(line *L, char isLocal){

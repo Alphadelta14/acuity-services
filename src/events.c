@@ -28,18 +28,11 @@ static void addEventToList(eventnode **eventlist, void (*callback)(line *L)){
     N->next = NULL;
 }
 
-void hook_event(int event, void (*callback)(line *L)){
-    if(event<NUM_EVENTS)
-        addEventToList(&eventlist[event], callback);
-}
-
-void unhook_event(int event, void (*callback)(line *L)){
+static void delEventFromList(eventnode **eventlist, void (*callback)(line *L)){
     eventnode *node, *prev;
-    if(event >= NUM_EVENTS)
-        return;
-    prev = node = eventlist[event];
+    prev = node = *eventlist;
     if(node->callback==callback){
-        eventlist[event] = node->next;
+        *eventlist = node->next;
         safefree(node);
         return;
     }
@@ -52,6 +45,17 @@ void unhook_event(int event, void (*callback)(line *L)){
         prev = node;
         node = node->next;
     }
+
+}
+
+void hook_event(int event, void (*callback)(line *L)){
+    if(event<NUM_EVENTS)
+        addEventToList(&eventlist[event], callback);
+}
+
+void unhook_event(int event, void (*callback)(line *L)){
+    if(event<NUM_EVENTS)
+        delEventFromList(&eventlist[event], callback);
 }
 
 void hook_named_event(char *name, void (*callback)(line *L)){
@@ -71,6 +75,33 @@ void hook_named_event(char *name, void (*callback)(line *L)){
     namednode->next = namedeventlist;
     namedeventlist = namednode;
     addEventToList(&namednode->eventlist, callback);
+}
+
+void unhook_named_event(char *name, void (*callback)(line *L)){
+    namedeventnode *namednode, *prevnode;
+    prevnode = namednode = namedeventlist;
+    if(!strcasecmp(namednode->name, name)){
+        delEventFromList(&namednode->eventlist, callback);
+        if(!namednode->eventlist){
+            namedeventlist = namednode->next;
+            safefree(namednode->name);
+            safefree(namednode);
+        }
+        return;
+    }
+    while(namednode){
+        if(!strcasecmp(namednode->name, name)){
+            delEventFromList(&namednode->eventlist, callback);
+            if(!namednode->eventlist){
+                prevnode->next = namednode->next;
+                safefree(namednode->name);
+                safefree(namednode);
+            }
+            return;
+        }
+        prevnode = namednode;
+        namednode = namednode->next;
+    }
 }
 
 void fireEventList(eventnode *eventlist, line *L){
@@ -97,6 +128,7 @@ void fire_named_event(char *name, line *L){
             fireEventList(namednode->eventlist, L);
             return;
         }
+        namednode = namednode->next;
     }
 }
 
