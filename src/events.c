@@ -115,7 +115,7 @@ void fireEventList(eventnode *eventlist, line *L){
 }
 
 void fire_event(int event, line *L){
-    if(event < NUM_EVENTS)
+    if(event >= NUM_EVENTS)
         return;
     fireEventList(eventlist[event], L);
 }
