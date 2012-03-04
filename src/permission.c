@@ -164,7 +164,11 @@ void loadPermissions(){
     db_query("CREATE TABLE IF NOT EXISTS `perms` ("
     "`classid` int unsigned,"
     "`permname` text (255) NOT NULL,"
-    "`perm` int unsigned);", NULL, NULL);
+    "`perm` tinyint);", NULL, NULL);
+    db_query("CREATE TABLE IF NOT EXISTS `userperms` ("
+    "`nickid` int unsigned,"
+    "`permname` text (255) NOT NULL,"
+    "`perm` tinyint);", NULL, NULL);
     db_query("SELECT `perms`.`classid`, `classname`, `parent`, `permname`, `perm`"
     "FROM `permclass` LEFT JOIN `perms` ON"
     "`perms`.`classid` = `permclass`.`classid` ORDER BY `perms`.`classid`;", &result, NULL);
