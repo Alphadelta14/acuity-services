@@ -44,6 +44,7 @@ int acuity_start(){
     fpid = fopen("acuity.pid", "w");
     fprintf(fpid, "%d", getpid());
     fclose(fpid);
+    log_init();
     signal(SIGHUP, sighup);
     signal(SIGQUIT, sigquit);
     signal(SIGINT, sigquit);

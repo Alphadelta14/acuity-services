@@ -14,7 +14,8 @@ LIBS = -ldl -lsqlite3
 services:
 	mkdir -p build
 	$(CC) $(CFLAGS) -c -Iincludes -o build/acuity.o src/acuity.c
-	$(CC) $(BINFLAGS) -o acuity build/acuity.o $(LIBS)
+	$(CC) $(CFLAGS) -c -Iincludes -o build/log.o src/log.c
+	$(CC) $(BINFLAGS) -o acuity build/acuity.o build/log.o $(LIBS)
 
 cmd = $(CC) $(CFLAGS) $(MODFLAGS) -Iincludes -c -o $(patsubst src/modules/%.c, build/modules/%.o, $(var)) $(var);\
 $(CC) $(BINFLAGS) -shared -export-dynamic -o $(patsubst src/modules/%.c, modules/%.so, $(var)) $(patsubst src/modules/%.c, build/modules/%.o, $(var));\
