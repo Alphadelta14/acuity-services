@@ -6,6 +6,7 @@ BINFLAGS = -g -Wall -rdynamic
 # BSD users:
 # LIBS = -lsqlite3
 LIBS = -ldl -lsqlite3
+SOEXT = .so
 
 # Don't edit below here:
 
@@ -19,7 +20,7 @@ services:
 	$(CC) $(BINFLAGS) -o acuity build/acuity.o build/log.o build/panic.o $(LIBS)
 
 cmd = $(CC) $(CFLAGS) $(MODFLAGS) -Iincludes -c -o $(patsubst src/modules/%.c, build/modules/%.o, $(var)) $(var);\
-$(CC) $(BINFLAGS) -shared -export-dynamic -o $(patsubst src/modules/%.c, modules/%.so, $(var)) $(patsubst src/modules/%.c, build/modules/%.o, $(var));\
+$(CC) $(BINFLAGS) -shared -export-dynamic -o $(patsubst src/modules/%.c, modules/%.$(SOEXT), $(var)) $(patsubst src/modules/%.c, build/modules/%.o, $(var));\
 echo "Built module: $(patsubst src/modules/%.c, %, $(var))";
 
 mod:
