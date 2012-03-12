@@ -5,5 +5,6 @@
 
 #include "acuity.h"
 #include "log.h"
+#include "panic.h"
 
 #endif /* _SERVICES_H */
