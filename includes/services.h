@@ -7,5 +7,6 @@
 #include "log.h"
 #include "panic.h"
 #include "module.h"
+#include "util.h"
 
 #endif /* _SERVICES_H */
