@@ -33,12 +33,12 @@ void *loadModule(const char *modname){
     modnode *node;
 
     node = modlist;
-    while(node){
-        if(!strcasecmp(node->name, modname)){
-            return node;
-        }
-        node = node->next;
-    }
+    if(node)
+        do{
+            if(!strcasecmp(node->name, modname)){
+                return node;
+            }
+        }while(ITER(node));
     MOD_STATE = MOD_LOAD;
     aclog(LOG_DEBUG, "Loading module: %s", modname);
     safenmalloc(fname, char, 10+strlen(modname)+strlen(modext));
@@ -72,25 +72,25 @@ void unloadModule(char *name){
     modnode *node, *prev = NULL;
     node = modlist;
     MOD_STATE = MOD_UNLOAD;
-    while(node){
-        if(!strcasecmp(node->name, name)){
-            aclog(LOG_DEBUG, "Unloading module: %s", node->name);
-            *(void **) (&termModule) = modsymbol(node->handle, "TERM_MOD");
-            if(termModule)
-                termModule();
-            safefree(node->name);
-            if(prev)
-                prev->next = node->next;
-            else
-                modlist = node;
-            modclose(node->handle);
-            safefree(node);
-            aclog(LOG_DEBUG, "\t[OK]\n");
-            return;
-        }
-        prev = node;
-        node = node->next;
-    }
+    if(node)
+        do{
+            if(!strcasecmp(node->name, name)){
+                aclog(LOG_DEBUG, "Unloading module: %s", node->name);
+                *(void **) (&termModule) = modsymbol(node->handle, "TERM_MOD");
+                if(termModule)
+                    termModule();
+                safefree(node->name);
+                if(prev)
+                    prev->next = node->next;
+                else
+                    modlist = node;
+                modclose(node->handle);
+                safefree(node);
+                aclog(LOG_DEBUG, "\t[OK]\n");
+                return;
+            }
+            prev = node;
+        }while(ITER(node));
 }
 
 void unloadModules(){
@@ -103,7 +103,7 @@ void unloadModules(){
         if(termModule)
             termModule();
         prev = node;
-        node = node->next;
+        ITER(node);
         safefree(prev->name);
         modclose(prev->handle);
         safefree(prev);
@@ -121,14 +121,12 @@ void reloadModule(char *modname){
 char isModuleLoaded(char *modname){
     modnode *node;
     node = modlist;
-    if(!node)
+    if(EMPTY(node))
         return 0;
-    while(node){
-        if(!strcasecmp(node->name, modname)){
+    do{
+        if(!strcasecmp(node->name, modname))
             return 1;
-        }
-        node = node->next;
-    }
+    }while(ITER(node));
     return 0;
 }
 
