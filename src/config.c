@@ -78,14 +78,29 @@ static void loadDefaults(){
     }
 }
 
-void loadConfig(){
+void loadConfig(int argc, char *argv[]){
     /* TODO: log malformed lines */
-    FILE *f;
+    FILE *f = NULL;
     char *name, *value, tmp[512];
-    int len, match;
+    int len, match, i;
 
     loadDefaults();
-    f = fopen("acuity.conf", "r");
+    for(i = 0; i < argc; i++){
+        if(!strcmp(argv[i], "-c")){
+            f = fopen(argv[i+1], "r");
+            if(!f){
+                aclog(LOG_ERROR, "Could not open the configuration file "
+                    "supplied by '-c': %s\n", argv[i+1]);
+            }
+        }
+    }
+    if(!f)
+        f = fopen("acuity.conf", "r");
+    if(!f){
+        aclog(LOG_ERROR, "Could not open the configuration file 'acuity.conf'."
+            " Be sure to create this file.\n");
+        return;
+    }
     while(1){
         match = fscanf(f,"%s ",tmp);
         if(match == EOF) break;

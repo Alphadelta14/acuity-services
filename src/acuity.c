@@ -16,7 +16,7 @@ time_t starttime;
 /* local to just this file */
 void sighup();
 void sigquit();
-int acuity_start();
+int acuity_start(int argc, char *argv[]);
 int acuity_stop();
 int acuity_rehash();
 
@@ -26,7 +26,7 @@ int main(int argc, char *argv[]){
         return 0;
     }
     if(!strcmp(argv[1], "start")){
-        return acuity_start();
+        return acuity_start(argc, argv);
     }else if(!strcmp(argv[1], "stop")){
         return acuity_stop();
     }else if(!strcmp(argv[1], "rehash")){
@@ -38,18 +38,19 @@ int main(int argc, char *argv[]){
 }
 
 
-int acuity_start(){
+int acuity_start(int argc, char *argv[]){
     FILE *fpid;
 
     fpid = fopen("acuity.pid", "w");
     fprintf(fpid, "%d", getpid());
     fclose(fpid);
-    log_init();
+    log_init(argc, argv);
     signal(SIGHUP, sighup);
     signal(SIGQUIT, sigquit);
     signal(SIGINT, sigquit);
     /* Now, our uptime may start! */
     starttime = time(NULL);
+    loadConfig(argc, argv);
     return 0;
 }
 

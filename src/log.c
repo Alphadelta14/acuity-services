@@ -12,6 +12,6 @@ void errprintf(int flags, ...){
     va_end(args);
 }
 
-void log_init(){
+void log_init(int argc, char *argv[]){
     aclog = &errprintf;
 }

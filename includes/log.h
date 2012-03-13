@@ -30,6 +30,6 @@
 void (*aclog)(int flags, ...);
 
 /* Only for startup: */
-void log_init(void);
+void log_init(int argc, char *argv[]);
 
 #endif /* _LOG_H */
