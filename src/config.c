@@ -73,7 +73,7 @@ static void loadDefaults(){
         strcpy(name, def->name);
         safenmalloc(value, char, strlen(def->value)+1);
         strcpy(value, def->value);
-        setConfigValue(name,value);
+        setConfigValue(name, value);
         def++;
     }
 }
@@ -102,7 +102,7 @@ void loadConfig(int argc, char *argv[]){
         return;
     }
     while(1){
-        match = fscanf(f,"%s ",tmp);
+        match = fscanf(f, "%s ", tmp);
         if(match == EOF) break;
         if(match < 1){
             if(!fgets(tmp, 512, f)) break;
