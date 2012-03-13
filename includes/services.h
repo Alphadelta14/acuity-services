@@ -6,8 +6,8 @@
 #include "acuity.h"
 #include "log.h"
 #include "panic.h"
-#include "module.h"
 #include "util.h"
+#include "module.h"
 #include "config.h"
 #include "events.h"
 

@@ -4,6 +4,9 @@
 #define ITER(n) ( n = n ->next)
 #define EMPTY(n) (!n)
 
+#define STR(arg) #arg
+#define XSTR(name) STR(name)
+
 /* metanode = key/value pair node. Used for configuration entries
  * right now
  */

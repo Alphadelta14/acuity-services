@@ -15,9 +15,7 @@
 #ifndef MODEXT
 #define modext ".so"
 #else
-#define STR_VALUE(arg) #arg
-#define MODSTR(name) STR_VALUE(name)
-#define modext MODSTR(MODEXT)
+#define modext XSTR(MODEXT)
 #endif /* MODEXT */
 
 modnode *modlist = NULL;
