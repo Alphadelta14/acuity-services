@@ -8,5 +8,6 @@
 #include "panic.h"
 #include "module.h"
 #include "util.h"
+#include "config.h"
 
 #endif /* _SERVICES_H */
