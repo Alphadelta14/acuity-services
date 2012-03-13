@@ -51,6 +51,9 @@ int acuity_start(int argc, char *argv[]){
     signal(SIGHUP, sighup);
     signal(SIGQUIT, sigquit);
     signal(SIGINT, sigquit);
+#ifndef DEVEL
+    signal(SIGSEGV, panic);/* only hook on released versions */
+#endif /* DEVEL */
     /* Now, our uptime may start! */
     starttime = time(NULL);
     loadConfig(argc, argv);

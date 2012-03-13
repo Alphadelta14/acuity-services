@@ -11,7 +11,6 @@
 #define modsymbol dlsym
 #define modclose dlclose
 
-/* macros kinda force this to happen */
 #ifndef MODEXT
 #define modext ".so"
 #else
