@@ -102,10 +102,13 @@ int acuity_rehash(){
 
 
 void sighup(){
-    printf("got SIGHUP\n");
-    exit(0);
+    aclog(LOG_DEBUG, "got SIGHUP\n");
+    exit(1);
 }
 
 void sigquit(){
+    aclog(LOG_ERROR, "Acuity received QUIT signal. Shutting down.\n");
+    closeIRC("Acuity received QUIT signal. Shutting down.");
+    unloadModules();
     exit(0);
 }
