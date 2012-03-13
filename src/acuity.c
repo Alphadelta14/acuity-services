@@ -21,18 +21,21 @@ int acuity_stop();
 int acuity_rehash();
 
 int main(int argc, char *argv[]){
-    if(argc < 2){
-        printf("Usage: %s (start|stop|rehash)\n", argv[0]);
+    int last;
+
+    last = argc-1;
+    if(last == 0){
+        printf("Usage: %s [-c configfile] <start|stop|rehash>\n", argv[0]);
         return 0;
     }
-    if(!strcmp(argv[1], "start")){
+    if(!strcmp(argv[last], "start")){
         return acuity_start(argc, argv);
-    }else if(!strcmp(argv[1], "stop")){
+    }else if(!strcmp(argv[last], "stop")){
         return acuity_stop();
-    }else if(!strcmp(argv[1], "rehash")){
+    }else if(!strcmp(argv[last], "rehash")){
         return acuity_rehash();
     }else{
-        printf("Usage: %s (start|stop|rehash)\n", argv[0]);
+        printf("Usage: %s [-c configfile] <start|stop|rehash>\n", argv[0]);
     }
     return 0;
 }
