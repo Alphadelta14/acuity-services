@@ -108,7 +108,7 @@ void sighup(){
 
 void sigquit(){
     aclog(LOG_ERROR, "Acuity received QUIT signal. Shutting down.\n");
-    closeIRC("Acuity received QUIT signal. Shutting down.");
+    /*closeIRC("Acuity received QUIT signal. Shutting down.");*/
     unloadModules();
     exit(0);
 }

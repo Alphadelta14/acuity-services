@@ -4,6 +4,25 @@
 #include <string.h>
 #include <time.h>
 
+typedef struct eventnode_s {
+    void (*callback)(line *L);
+    struct eventnode_s *next;
+} eventnode_t;
+
+typedef struct namedeventnode_s {
+    char *name;
+    eventnode_t *eventlist;
+    struct namedeventnode_s *next;
+} namedeventnode_t;
+
+typedef struct timeevent_s {
+    void(*callback)(int argc, char **argv);
+    int argc;
+    char **argv;
+    time_t time;
+    struct timeevent_s *next;
+} timeevent_t;
+
 static namedeventnode_t *namedeventlist = NULL;
 static timeevent_t *timeeventlist = NULL;
 
@@ -35,7 +54,7 @@ static void delEventFromList(eventnode_t **eventlist, void (*callback)(line *L))
     }while(ITER(node));
 }
 
-void hook_named_event(char *name, void (*callback)(line *L)){
+void hook_event(char *name, void (*callback)(line *L)){
     namedeventnode_t *namednode;
 
     namednode = namedeventlist;
@@ -55,7 +74,7 @@ void hook_named_event(char *name, void (*callback)(line *L)){
     addEventToList(&namednode->eventlist, callback);
 }
 
-void unhook_named_event(char *name, void (*callback)(line *L)){
+void unhook_event(char *name, void (*callback)(line *L)){
     namedeventnode_t *namednode, *prevnode;
 
     prevnode = namednode = namedeventlist;
@@ -94,7 +113,7 @@ void fireEventList(eventnode_t *eventlist, line *L){
     }while(ITER(N));
 }
 
-void fire_named_event(char *name, line *L){
+void fire_event(char *name, line *L){
     namedeventnode_t *namednode;
 
     namednode = namedeventlist;
@@ -108,7 +127,7 @@ void fire_named_event(char *name, line *L){
     }while(ITER(namednode));
 }
 
-void addTimerEvent(void(*callback)(int argc, char **argv), time_t expires, int argc, ...){
+void add_timer_event(void(*callback)(int argc, char **argv), time_t expires, int argc, ...){
     timeevent_t *T, *S;
     char **argv, *arg;
     va_list ap;
@@ -148,7 +167,7 @@ void addTimerEvent(void(*callback)(int argc, char **argv), time_t expires, int a
     }
 }
 
-void onTimer(){
+void fire_timer_event(){
     int i;
     time_t now;
     timeevent_t *T, *prev;
