@@ -9,5 +9,6 @@
 #include "module.h"
 #include "util.h"
 #include "config.h"
+#include "events.h"
 
 #endif /* _SERVICES_H */
