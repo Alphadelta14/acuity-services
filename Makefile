@@ -18,14 +18,19 @@ services:
 	$(CC) $(CFLAGS) -c -Iincludes -o build/log.o src/log.c
 	$(CC) $(CFLAGS) -c -Iincludes -o build/panic.o src/panic.c
 	$(CC) $(CFLAGS) -c -Iincludes -o build/util.o src/util.c
-	$(CC) $(CFLAGS) -DMODEXT=$(SOEXT) -c -Iincludes -o build/module.o src/module.c
+	$(CC) $(CFLAGS) -DMODEXT=$(SOEXT) -c -Iincludes -o build/module.o\
+ src/module.c
 	$(CC) $(CFLAGS) -c -Iincludes -o build/config.o src/config.c
 	$(CC) $(CFLAGS) -c -Iincludes -o build/events.o src/events.c
-	$(CC) $(BINFLAGS) -o acuity build/acuity.o build/log.o build/panic.o build/util.o build/module.o build/config.o build/events.o $(LIBS)
+	$(CC) $(CFLAGS) -c -Iincludes -o build/ircd.o src/ircd.c
+	$(CC) $(BINFLAGS) -o acuity build/acuity.o build/log.o build/panic.o\
+ build/util.o build/module.o build/config.o build/events.o build/ircd.o $(LIBS)
 
-cmd = $(CC) $(CFLAGS) $(MODFLAGS) -Iincludes -c -o $(patsubst src/modules/%.c, build/modules/%.o, $(var)) $(var);\
-$(CC) $(BINFLAGS) -shared -export-dynamic -o $(patsubst src/modules/%.c, modules/%$(SOEXT), $(var)) $(patsubst src/modules/%.c, build/modules/%.o, $(var));\
-echo "Built module: $(patsubst src/modules/%.c, %, $(var))";
+cmd = $(CC) $(CFLAGS) $(MODFLAGS) -Iincludes -c -o $(patsubst src/modules/%.c,\
+ build/modules/%.o, $(var)) $(var); $(CC) $(BINFLAGS) -shared -export-dynamic\
+ -o $(patsubst src/modules/%.c, modules/%$(SOEXT), $(var)) $(patsubst\
+ src/modules/%.c, build/modules/%.o, $(var));\
+ echo "Built module: $(patsubst src/modules/%.c, %, $(var))";
 
 mod:
 	mkdir -p build/modules

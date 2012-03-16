@@ -48,4 +48,28 @@ typedef struct line_s {
     char *text; /* The "final" parameter after a colon, if provided */
 } line_t;
 
+int char2mode(char modechar);
+char *build_modes(int count, ...);/* Use this output in conjunction with setMode() */
+bool check_modes(modes_t modes, int count, ...);
+int irccmp(char *str1, char *str2);/* IRC casemapping versions of strcmp; use for nick comparison */
+int irccasecmp(char *str1, char *str2);
+
+/* Module developers: These functions aren't interesting to you in the
+ * least. Seriously. They're just used internally to keep track of
+ * users/channels and their changes; you shouldn't need to fiddle with
+ * them unless you're coding an IRCd module.
+ */
+chan_t *getChannel(char *name);
+user_t *addUser(char *uid, char *nick, char *ident, char *host, char *ip, 
+    char *vhost, char *gecos, char *modes);
+void changeMode(modes_t *modes, char *modestr);
+void changeNick(user_t *user, char *nick);
+user_t *getUser(char *uid);
+user_t *getUserByNick(char *nick);
+chan_t *addChannel(char *name, char *modes, int paramCount, char **params);
+chan_t *getChannel(char *name);
+statusnode_t *addChannelUser(chan_t *chan, user_t *user);
+void delChannelUser(chan_t *chan, user_t *user);
+int chanStatusAppend(char *channame, char *status);
+
 #endif /* _IRCD_H */

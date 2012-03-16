@@ -22,12 +22,12 @@ typedef struct modes_s {
 } modes_t;
 
 typedef struct statusnode_s {
-    modes_t mode;
+    modes_t modes;
     user_t *user;
     struct statusnode_s *next;
 } statusnode_t;
 
-struct _user {
+struct user_s {
     char *uid;/* unique identifier */
     char *nick;
     char *ident;
@@ -35,18 +35,18 @@ struct _user {
     char *vhost;
     char *ip;
     char *gecos;
-    modes_t mode;
+    modes_t modes;
     channode_t *chanlist;
     metanode_t *metadata;
 };
 
-struct _chan {
+struct chan_s {
     /* char *cid; unique identifierd, but not used...
         Maybe for & channels? Not sure what allows multiple channels with
         same names */
     char *name;
     char *topic;
-    modes_t mode;
+    modes_t modes;
     /* banlist? */
     statusnode_t *userlist;
     metanode_t *metadata;
