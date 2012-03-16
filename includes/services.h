@@ -10,5 +10,7 @@
 #include "module.h"
 #include "config.h"
 #include "events.h"
+#include "entity.h"
+#include "ircd.h"
 
 #endif /* _SERVICES_H */
