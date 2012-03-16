@@ -16,6 +16,13 @@ panic_message("Failed to allocate for " #variable ".\n");\
 }\
 } while(0);
 
+#define safecpy(dest,src) do{\
+safenmalloc( dest , char, strlen( src )+1);\
+if(!strcpy( dest , src )){\
+panic_message("Could not copy " #src " to " #dest ".\n");\
+}\
+} while(0);
+
 #define safefree(pointer) do{ if( pointer ) free( pointer );\
 pointer = NULL;\
 } while(0);
