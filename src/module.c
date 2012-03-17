@@ -10,6 +10,7 @@
 #define moderror dlerror
 #define modsymbol dlsym
 #define modclose dlclose
+#define MOD_FLAGS RTLD_NOW|RTLD_GLOBAL
 
 #ifndef MODEXT
 #define modext ".so"
@@ -19,8 +20,9 @@
 
 void (*initModule)(void);
 void (*termModule)(void);
+void (*reloadModule)(void);
 
-modnode *modlist = NULL;
+static modnode_t *modlist = NULL;
 int MOD_STATE = MOD_IDLE;
 
 char *module_error(){
@@ -30,7 +32,7 @@ char *module_error(){
 void *load_module(const char *modname){
     char *fname;
     void *modhandle;
-    modnode *node;
+    modnode_t *node;
 
     node = modlist;
     if(node)
@@ -46,8 +48,8 @@ void *load_module(const char *modname){
     strcpy(fname, "modules/");
     strcat(fname, modname);
     strcat(fname, modext);
-    modhandle = modopen(fname, RTLD_NOW|RTLD_GLOBAL);
-    free(fname);
+    modhandle = modopen(fname, MOD_FLAGS);
+    safefree(fname);
     if(!modhandle){
         aclog(LOG_DEBUG, "  [FAIL]\n");
         aclog(LOG_ERROR, "Could not open '%s' module: %s\n", modname,
@@ -55,13 +57,11 @@ void *load_module(const char *modname){
         return NULL;
     }
     *(void **) (&initModule) = modsymbol(modhandle, "INIT_MOD");
-    safemalloc(node, modnode);
+    safemalloc(node, modnode_t);
     node->handle = modhandle;
-    safenmalloc(node->name, char, strlen(modname)+1);
-    strcpy(node->name, modname);
-    node->next = modlist;
-    modlist = node;
-    aclog(LOG_DEBUG, "  [OK]\n");
+    safecpy(node->name, modname);
+    PREPEND(node, modlist);
+    aclog(LOG_DEBUG, "\t[OK]\n");
     if(initModule)
         initModule();
     MOD_STATE = MOD_IDLE;
@@ -69,7 +69,8 @@ void *load_module(const char *modname){
 }
 
 void unload_module(char *name){
-    modnode *node, *prev = NULL;
+    modnode_t *node, *prev = NULL;
+
     node = modlist;
     MOD_STATE = MOD_UNLOAD;
     if(node)
@@ -94,7 +95,7 @@ void unload_module(char *name){
 }
 
 void unload_modules(){
-    modnode *node, *prev;
+    modnode_t *node, *prev;
     node = modlist;
     MOD_STATE = MOD_UNLOAD;
     while(node){
@@ -113,13 +114,51 @@ void unload_modules(){
     modlist = NULL;
 }
 
-void reload_module(char *modname){
-    unload_module(modname);
-    load_module(modname);
+void *reload_module(char *modname){
+    modnode_t *node, *prev = NULL;
+    char *fname;
+
+    node = modlist;
+    if(EMPTY(node))
+        return NULL;
+    do{
+        if(!strcasecmp(node->name, modname)){
+            aclog(LOG_DEBUG, "Reloading module: %s", modname);
+            *(void **) (&reloadModule) = modsymbol(node->handle, "PRERELOAD_MOD");
+            if(reloadModule)
+                reloadModule();
+            modclose(node->handle);
+            safenmalloc(fname, char, 10+strlen(modname)+strlen(modext));
+            strcpy(fname, "modules/");
+            strcat(fname, modname);
+            strcat(fname, modext);
+            node->handle = modopen(fname, MOD_FLAGS);
+            safefree(fname);
+            if(!node->handle){
+                aclog(LOG_DEBUG, "  [FAIL]\n");
+                aclog(LOG_ERROR, "Could not reopen '%s' module: %s\n", modname,
+                    module_error());
+                safefree(node->name);
+                if(prev)
+                    prev->next = node->next;
+                else
+                    modlist = node->next;
+                safefree(node);
+                return NULL;
+            }
+            *(void **) (&reloadModule) = modsymbol(node->handle, "RELOAD_MOD");
+            if(reloadModule)
+                reloadModule();
+            aclog(LOG_DEBUG, "\t[OK]\n");
+            return node->handle;
+        }
+        prev = node;
+    }while(ITER(node));
+    return NULL;
 }
 
 bool is_module_loaded(char *modname){
-    modnode *node;
+    modnode_t *node;
     node = modlist;
     if(EMPTY(node))
         return FALSE;
