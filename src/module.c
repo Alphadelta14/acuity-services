@@ -17,14 +17,17 @@
 #define modext XSTR(MODEXT)
 #endif /* MODEXT */
 
+void (*initModule)(void);
+void (*termModule)(void);
+
 modnode *modlist = NULL;
 int MOD_STATE = MOD_IDLE;
 
-char *moduleError(){
+char *module_error(){
     return moderror();
 }
 
-void *loadModule(const char *modname){
+void *load_module(const char *modname){
     char *fname;
     void *modhandle;
     modnode *node;
@@ -65,7 +68,7 @@ void *loadModule(const char *modname){
     return modhandle;
 }
 
-void unloadModule(char *name){
+void unload_module(char *name){
     modnode *node, *prev = NULL;
     node = modlist;
     MOD_STATE = MOD_UNLOAD;
@@ -90,7 +93,7 @@ void unloadModule(char *name){
         }while(ITER(node));
 }
 
-void unloadModules(){
+void unload_modules(){
     modnode *node, *prev;
     node = modlist;
     MOD_STATE = MOD_UNLOAD;
@@ -110,35 +113,35 @@ void unloadModules(){
     modlist = NULL;
 }
 
-void reloadModule(char *modname){
-    unloadModule(modname);
-    loadModule(modname);
+void reload_module(char *modname){
+    unload_module(modname);
+    load_module(modname);
 }
 
-char isModuleLoaded(char *modname){
+bool is_module_loaded(char *modname){
     modnode *node;
     node = modlist;
     if(EMPTY(node))
-        return 0;
+        return FALSE;
     do{
         if(!strcasecmp(node->name, modname))
-            return 1;
+            return TRUE;
     }while(ITER(node));
-    return 0;
+    return FALSE;
 }
 
-void loadDependencies(int count, ...){
+void load_dependencies(int count, ...){
     int i;
     va_list args;
     char *modname;
-    va_start(args,count);
+    va_start(args, count);
     aclog(LOG_DEBUG,"%d depends\n", count);
-    for(i=0;i<count;i++){
+    for(i=0; i < count; i++){
         modname = va_arg(args, char*);
-        aclog(LOG_DEBUG,"Checking for %s\n", modname);
-        if(!isModuleLoaded(modname)){
-            aclog(LOG_DEBUG,"Loading depended module: %s\t\n", modname);
-            loadModule(modname);
+        aclog(LOG_DEBUG, "Checking for %s\n", modname);
+        if(!is_module_loaded(modname)){
+            aclog(LOG_DEBUG, "Loading depended module: %s\t\n", modname);
+            load_module(modname);
         }
     }
     va_end(args);

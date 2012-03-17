@@ -11,7 +11,7 @@ char panic_buffer_reserves[] = "";/* reserve more space as needed later */
 void panic(){
     aclog(LOG_ERROR, "We've come across a horrible error that has caused us "
         "to cease all functionality. That is all. [TERMINATED]\n");
-    unloadModules();
+    unload_modules();
     exit(1);
 }
 

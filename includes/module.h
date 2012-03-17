@@ -13,14 +13,13 @@ typedef struct _modnode {
 } modnode;
 
 extern modnode *modlist;
-void *loadModule(const char *modname);
-void unloadModules(void);
-void unloadModule(char *name);
-void reloadModule(char *modname);
-char *moduleError(void);
-void loadDependencies(int count, ...);
-void (*initModule)(void);
-void (*termModule)(void);
+void *load_module(const char *modname);
+void unload_modules(void);
+void unload_module(char *name);
+void reload_module(char *modname);
+char *module_error(void);
+void load_dependencies(int count, ...);
+bool is_module_loaded(char *modname);
 extern int MOD_STATE;
 
 #endif /* MODULE_H */
