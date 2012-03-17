@@ -5,9 +5,9 @@
 
 typedef metanode_t confval_t;
 
-void setConfigValue(char *name, char *val);
-char *getConfigValue(char *name);
+void set_config_value(char *name, char *val);
+char *get_config_value(char *name);
 
-void loadConfig(int argc, char *argv[]);
+void load_config(int argc, char *argv[]);
 
 #endif /* _CONFIG_H */

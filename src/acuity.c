@@ -56,7 +56,7 @@ int acuity_start(int argc, char *argv[]){
 #endif /* DEVEL */
     /* Now, our uptime may start! */
     starttime = time(NULL);
-    loadConfig(argc, argv);
+    load_config(argc, argv);
     return 0;
 }
 

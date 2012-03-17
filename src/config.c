@@ -17,7 +17,7 @@ static defval_t defaultconf[] = {
 {NULL, NULL}
 };
 
-void setConfigValue(char *name, char *value){
+void set_config_value(char *name, char *value){
     confval_t *C;
 
     C = conflist;
@@ -45,7 +45,7 @@ void setConfigValue(char *name, char *value){
     conflist = C;
 }
 
-char *getConfigValue(char *name){
+char *get_config_value(char *name){
     confval_t *C;
 
     C = conflist;
@@ -73,12 +73,12 @@ static void loadDefaults(){
         strcpy(name, def->name);
         safenmalloc(value, char, strlen(def->value)+1);
         strcpy(value, def->value);
-        setConfigValue(name, value);
+        set_config_value(name, value);
         def++;
     }
 }
 
-void loadConfig(int argc, char *argv[]){
+void load_config(int argc, char *argv[]){
     /* TODO: log malformed lines */
     FILE *f = NULL;
     char *name, *value, tmp[512];
@@ -124,6 +124,6 @@ void loadConfig(int argc, char *argv[]){
         len = strlen(tmp)+1;
         safenmalloc(value, char, len);
         strcpy(value, tmp);
-        setConfigValue(name, value);
+        set_config_value(name, value);
     }
 }
