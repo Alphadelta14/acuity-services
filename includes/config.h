@@ -3,7 +3,12 @@
 
 #include "services.h"
 
-typedef metanode_t confval_t;
+typedef struct confval_s {
+    char *name;
+    char *value;
+    char *old;/* TODO: implement deltas */
+    struct confval_s *next;
+} confval_t;
 
 void set_config_value(char *name, char *val);
 char *get_config_value(char *name);
