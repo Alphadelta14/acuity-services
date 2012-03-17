@@ -376,3 +376,16 @@ int chanStatusAppend(char *channame, char *status){
     return success;
 }
 
+line_t parseLine(char *data){
+    line_t line;
+    return line;
+}
+void handleLine(line_t *line){
+    return;
+}
+void freeLine(line_t *line, char isLocal){
+    return;
+}
+void handleClose(char *reason){
+    return;
+}

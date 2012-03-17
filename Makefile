@@ -23,8 +23,10 @@ services:
 	$(CC) $(CFLAGS) -c -Iincludes -o build/config.o src/config.c
 	$(CC) $(CFLAGS) -c -Iincludes -o build/events.o src/events.c
 	$(CC) $(CFLAGS) -c -Iincludes -o build/ircd.o src/ircd.c
+	$(CC) $(CFLAGS) -c -Iincludes -o build/ircconn.o src/ircconn.c
 	$(CC) $(BINFLAGS) -o acuity build/acuity.o build/log.o build/panic.o\
- build/util.o build/module.o build/config.o build/events.o build/ircd.o $(LIBS)
+ build/util.o build/module.o build/config.o build/events.o build/ircd.o\
+ build/ircconn.o $(LIBS)
 
 cmd = $(CC) $(CFLAGS) $(MODFLAGS) -Iincludes -c -o $(patsubst src/modules/%.c,\
  build/modules/%.o, $(var)) $(var); $(CC) $(BINFLAGS) -shared -export-dynamic\
