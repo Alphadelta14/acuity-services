@@ -378,13 +378,17 @@ int chanStatusAppend(char *channame, char *status){
 
 line_t parseLine(char *data){
     line_t line;
+    line.paramCount = 0;
     return line;
 }
 void handleLine(line_t *line){
     return;
 }
 void freeLine(line_t *line, char isLocal){
-    return;
+    if(line->paramCount)
+        free(line->params);
+    if(!isLocal)
+        free(line);
 }
 void handleClose(char *reason){
     return;
