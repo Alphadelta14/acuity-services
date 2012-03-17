@@ -43,6 +43,7 @@ int main(int argc, char *argv[]){
 
 int acuity_start(int argc, char *argv[]){
     FILE *fpid;
+    char *ircmod;
 
     fpid = fopen("acuity.pid", "w");
     fprintf(fpid, "%d", getpid());
@@ -57,6 +58,10 @@ int acuity_start(int argc, char *argv[]){
     /* Now, our uptime may start! */
     starttime = time(NULL);
     load_config(argc, argv);
+    if(!(ircmod = get_config_value("ircd"))){
+        aclog(LOG_ERROR, "No IRCd Module is loaded.\n");
+    }
+    unloadModules();
     return 0;
 }
 
