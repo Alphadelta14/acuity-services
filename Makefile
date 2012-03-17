@@ -1,7 +1,7 @@
 # Edit here as necessary:
 CC = gcc
 CFLAGS = -g -Wall -Iincludes -DDEVEL
-MODFLAGS = -fpic -rdynamic -export-dynamic
+MODFLAGS = -fPIC -rdynamic -export-dynamic
 BINFLAGS = -g -Wall -rdynamic
 # BSD users:
 # LIBS = -lsqlite3
@@ -10,7 +10,7 @@ SOEXT = .so
 
 # Don't edit below here:
 
-@all: services
+@all: services mod
 
 services:
 	mkdir -p build

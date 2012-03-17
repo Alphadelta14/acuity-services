@@ -53,10 +53,6 @@ char *build_modes(int count, ...);/* Use this output in conjunction with setMode
 bool check_modes(modes_t modes, int count, ...);
 int irccmp(char *str1, char *str2);/* IRC casemapping versions of strcmp; use for nick comparison */
 int irccasecmp(char *str1, char *str2);
-extern line_t parseLine(char *data);
-extern void handleLine(line_t *line);
-extern void freeLine(line_t *line, char isLocal);
-extern void handleClose(char *reason);
 
 /* Module developers: These functions aren't interesting to you in the
  * least. Seriously. They're just used internally to keep track of
@@ -75,5 +71,10 @@ chan_t *getChannel(char *name);
 statusnode_t *addChannelUser(chan_t *chan, user_t *user);
 void delChannelUser(chan_t *chan, user_t *user);
 int chanStatusAppend(char *channame, char *status);
+void freeLine(line_t *line, char isLocal);
+
+line_t (*parseLine)(char *data);
+void (*handleLine)(line_t *line);
+void (*handleClose)(char *reason);
 
 #endif /* _IRCD_H */
