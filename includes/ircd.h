@@ -77,4 +77,9 @@ line_t (*parseLine)(char *data);
 void (*handleLine)(line_t *line);
 void (*handleClose)(char *reason);
 
+void send_raw(const char *buff);
+int irc_connect(char *host, char *port);
+int irc_eventloop(void);
+void irc_close(char *reason);
+
 #endif /* _IRCD_H */
