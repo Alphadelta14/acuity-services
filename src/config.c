@@ -127,3 +127,18 @@ void load_config(int argc, char *argv[]){
         set_config_value(name, value);
     }
 }
+
+void clear_config(){
+    confval_t *C, *next;
+
+    C = conflist;
+    if(EMPTY(C))
+        return;
+    do{
+        next = C->next;
+        safefree(C->name);
+        safefree(C->value);
+        safefree(C);
+    }while((C = next));
+    conflist = NULL;
+}

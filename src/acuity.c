@@ -61,7 +61,8 @@ int acuity_start(int argc, char *argv[]){
     if(!(ircmod = get_config_value("ircd"))){
         aclog(LOG_ERROR, "No IRCd Module is loaded.\n");
     }
-    unloadModules();
+    unload_modules();
+    clear_config();
     return 0;
 }
 
@@ -115,5 +116,6 @@ void sigquit(){
     aclog(LOG_ERROR, "Acuity received QUIT signal. Shutting down.\n");
     /*closeIRC("Acuity received QUIT signal. Shutting down.");*/
     unload_modules();
+    clear_config();
     exit(0);
 }

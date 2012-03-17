@@ -9,5 +9,6 @@ void set_config_value(char *name, char *val);
 char *get_config_value(char *name);
 
 void load_config(int argc, char *argv[]);
+void clear_config(void);
 
 #endif /* _CONFIG_H */
