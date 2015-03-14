@@ -1,0 +1,1 @@
+Acuity provides service functionality to an IRC network. The services provided provide authorization to registered users and channels.
